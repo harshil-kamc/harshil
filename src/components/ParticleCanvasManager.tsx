@@ -316,10 +316,9 @@ export function ParticleCanvasManager({
       const particles = particlesRef.current;
 
       // Deep dark canvas background clear with trail
-      ctx.fillStyle = "rgba(10, 10, 15, 0.2)";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      for (let i = particles.length - 1; i >= 0; i--) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+ctx.fillStyle = "#0a0a0f";
+ctx.fillRect(0, 0, canvas.width, canvas.height);      for (let i = particles.length - 1; i >= 0; i--) {
         const particle = particles[i]!;
         particle.move();
         particle.draw(ctx, drawAsPoints);
