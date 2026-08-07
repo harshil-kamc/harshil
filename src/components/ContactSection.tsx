@@ -1,6 +1,6 @@
 import { useState, FormEvent } from "react";
 import { HARSHIL_BIO } from "../data/portfolioData";
-import { Mail, Send, CheckCircle2, Github, Linkedin, Twitter, Sparkles } from "lucide-react";
+import { Mail, Send, CheckCircle2, Github, Linkedin, MessageCircle, Sparkles } from "lucide-react";
 
 export function ContactSection() {
   const [formState, setFormState] = useState({ name: "", email: "", message: "" });
