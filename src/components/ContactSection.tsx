@@ -127,10 +127,6 @@ export function ContactSection() {
           © {new Date().getFullYear()} {HARSHIL_BIO.name} — All Rights Reserved.
         </div>
       </div>
-<div className="flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-emerald-400" />
-              <span>Designed & Built with React & Canvas Particles</span>
-            </div>
     </section>
   );
 }
