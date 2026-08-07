@@ -9,13 +9,13 @@ import { SkillsSection } from "./components/SkillsSection";
 import { ContactSection } from "./components/ContactSection";
 import { PlaygroundModal } from "./components/PlaygroundModal";
 
-const HERO_SEQUENCE = ["HI", "I'm", "Harshil", "a student"];
+const HERO_SEQUENCE = ["Hi", "I'm", "Harshil", "a CSE&IT student","Explore my Portfolio"];
 
 export default function App() {
   const [activeSection, setActiveSection] = useState<string>("hero");
   const [isPlaygroundOpen, setIsPlaygroundOpen] = useState<boolean>(false);
   const [customSequence, setCustomSequence] = useState<string[] | null>(null);
-  const [currentWord, setCurrentWord] = useState<string>("HI");
+  const [currentWord, setCurrentWord] = useState<string>("Hi");
 
   // Scroll Section Intersection Observer
   useEffect(() => {
@@ -39,7 +39,7 @@ export default function App() {
               // Update particle canvas word based on section
               switch (id) {
                 case "hero":
-                  setCurrentWord("HI");
+                  setCurrentWord("Hi");
                   break;
                 case "about":
                   setCurrentWord("ABOUT");
