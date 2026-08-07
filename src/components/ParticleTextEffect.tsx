@@ -137,7 +137,7 @@ interface ParticleTextEffectProps {
   key?: string | number;
 }
 
-const DEFAULT_WORDS = ["HI", "I'm", "Harshil", "a student"];
+const DEFAULT_WORDS = ["Hi", "I'm", "Harshil", "a CSE&IT Student","Explore my Portfolio"];
 
 export function ParticleTextEffect({ words = DEFAULT_WORDS, cycleInterval = 240 }: ParticleTextEffectProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -149,7 +149,7 @@ export function ParticleTextEffect({ words = DEFAULT_WORDS, cycleInterval = 240 
   const wordsRef = useRef(words);
   wordsRef.current = words.length > 0 ? words : DEFAULT_WORDS;
 
-  const pixelSteps = 4;
+  const pixelSteps = 2;
   const drawAsPoints = true;
 
   useEffect(() => {
