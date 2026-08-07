@@ -281,11 +281,10 @@ export function ParticleTextEffect({ words = DEFAULT_WORDS, cycleInterval = 240 
       const particles = particlesRef.current;
 
       // Dark gradient background
-      const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-      grad.addColorStop(0, "rgba(10, 10, 10, 0.15)");
-      grad.addColorStop(1, "rgba(0, 0, 0, 0.35)");
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+     ctx.clearRect(0, 0, canvas.width, canvas.height);
+ctx.fillStyle = "#000";
+ctx.fillRect(0, 0, canvas.width, canvas.height);
+
 
       for (let i = particles.length - 1; i >= 0; i--) {
         const particle = particles[i]!;
