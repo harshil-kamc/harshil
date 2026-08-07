@@ -92,10 +92,6 @@ export function ContactSection() {
 
           {/* Social Quick Links */}
           <div className="pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-400">
-            <div className="flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-emerald-400" />
-              <span>Designed & Built with React & Canvas Particles</span>
-            </div>
 
             <div className="flex items-center gap-4">
               <a
@@ -131,6 +127,10 @@ export function ContactSection() {
           © {new Date().getFullYear()} {HARSHIL_BIO.name} — All Rights Reserved.
         </div>
       </div>
+<div className="flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-emerald-400" />
+              <span>Designed & Built with React & Canvas Particles</span>
+            </div>
     </section>
   );
 }
