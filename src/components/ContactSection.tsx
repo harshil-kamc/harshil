@@ -114,14 +114,7 @@ export function ContactSection() {
               >
                 <Linkedin className="w-4 h-4" /> LinkedIn
               </a>
-              <a
-                href={HARSHIL_BIO.twitter}
-                target="_blank"
-                rel="noreferrer"
-                className="hover:text-emerald-400 transition-colors flex items-center gap-1"
-              >
-                <Twitter className="w-4 h-4" /> X (Twitter)
-              </a>
+              
             </div>
           </div>
         </div>
