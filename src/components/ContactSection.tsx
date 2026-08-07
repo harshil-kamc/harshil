@@ -99,22 +99,29 @@ export function ContactSection() {
 
             <div className="flex items-center gap-4">
               <a
-                href={HARSHIL_BIO.github}
-                target="_blank"
+                href="https://github.com/harshil-kamc"
+                target="blank"
                 rel="noreferrer"
                 className="hover:text-emerald-400 transition-colors flex items-center gap-1"
               >
                 <Github className="w-4 h-4" /> GitHub
               </a>
               <a
-                href={HARSHIL_BIO.linkedin}
-                target="_blank"
+                href="https://in.linkedin.com/in/harshil-kamchetty-170a473bb"
+                target="blank"
                 rel="noreferrer"
                 className="hover:text-emerald-400 transition-colors flex items-center gap-1"
               >
                 <Linkedin className="w-4 h-4" /> LinkedIn
               </a>
-              
+              <a
+  href="https://wa.me/916304654185"
+  target="_blank"
+  rel="noreferrer"
+  className="hover:text-emerald-400 transition-colors flex items-center gap-1"
+>
+  <MessageCircle className="w-4 h-4" /> WhatsApp
+</a>
             </div>
           </div>
         </div>
