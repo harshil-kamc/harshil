@@ -13,7 +13,7 @@ export function ExperienceSection() {
           {EXPERIENCE_DATA.map((exp, idx) => (
             <div key={exp.id} className="relative group">
               {/* Glowing Timeline Marker Node */}
-              <div className="absolute -left-[31px] sm:-left-[49px] top-1.5 w-6 h-6 rounded-full bg-zinc-950 border-2 border-emerald-500/60 group-hover:border-emerald-400 group-hover:scale-125 transition-all duration-300 flex items-center justify-center shadow-lg shadow-emerald-500/20">
+              <div className="absolute left-0 -translate-x-1/2 top-1.5 w-6 h-6 rounded-full bg-zinc-950 border-2 border-emerald-500/60 flex items-center justify-center">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
               </div>
 
