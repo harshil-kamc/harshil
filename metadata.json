@@ -1,0 +1,6 @@
+{
+  "name": "Particle Text Effect",
+  "description": "Interactive canvas particle text portfolio with dynamic resume generator and real-time shared data model",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

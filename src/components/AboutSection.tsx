@@ -1,18 +1,17 @@
 import { HARSHIL_BIO } from "../data/portfolioData";
-import { User, Code, GraduationCap, MapPin, Mail, Download, Sparkles, CheckCircle2 } from "lucide-react";
+import { Code, GraduationCap, MapPin, Mail, Sparkles, CheckCircle2 } from "lucide-react";
 
 export function AboutSection() {
   return (
     <section id="about" className="relative py-28 px-4 z-10">
       <div className="max-w-5xl mx-auto space-y-12">
         {/* Section Header */}
-        
-<div className="h-80" />
+        <div className="h-80" />
 
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
           {/* Bio Overview Card */}
-          <div className="md:col-span-7 bg-transparent border border-white/10 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl relative overflow-hidden group">
+          <div className="md:col-span-7 bg-zinc-950/40 backdrop-blur-sm border border-white/10 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl relative overflow-hidden group">
             <div className="absolute -top-24 -right-24 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-emerald-500/20 transition-all duration-500" />
             
             <div className="space-y-4">
@@ -30,7 +29,7 @@ export function AboutSection() {
 
             {/* Key Facts / Education */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-              <div className="flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/5 text-xs text-zinc-300">
+              <div className="flex items-center gap-3 p-3 rounded-2xl bg-white/5 backdrop-blur-xs border border-white/5 text-xs text-zinc-300">
                 <GraduationCap className="w-4 h-4 text-emerald-400 shrink-0" />
                 <div>
                   <span className="block text-zinc-500 font-mono text-[10px]">EDUCATION</span>
@@ -38,7 +37,7 @@ export function AboutSection() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/5 text-xs text-zinc-300">
+              <div className="flex items-center gap-3 p-3 rounded-2xl bg-white/5 backdrop-blur-xs border border-white/5 text-xs text-zinc-300">
                 <MapPin className="w-4 h-4 text-cyan-400 shrink-0" />
                 <div>
                   <span className="block text-zinc-500 font-mono text-[10px]">LOCATION</span>
@@ -67,7 +66,7 @@ export function AboutSection() {
               {HARSHIL_BIO.stats.map((stat, idx) => (
                 <div
                   key={idx}
-                  className="bg-transparent border border-white/10 rounded-2xl p-5 text-center space-y-1 shadow-xl hover:border-emerald-500/40 transition-all duration-300"
+                  className="bg-zinc-950/40 backdrop-blur-sm border border-white/10 rounded-2xl p-5 text-center space-y-1 shadow-xl hover:border-emerald-500/40 transition-all duration-300"
                 >
                   <span className="block text-2xl sm:text-3xl font-extrabold text-transparent bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text font-mono">
                     {stat.value}
@@ -80,7 +79,7 @@ export function AboutSection() {
             </div>
 
             {/* Action Box */}
-            <div className="bg-transparent border border-white/10 rounded-2xl p-6 space-y-4 shadow-xl">
+            <div className="bg-zinc-950/40 backdrop-blur-sm border border-white/10 rounded-2xl p-6 space-y-4 shadow-xl">
               <div className="flex items-center gap-2 text-white font-semibold text-sm">
                 <Sparkles className="w-4 h-4 text-emerald-400" />
                 <span>Open for Collaborations</span>
@@ -88,10 +87,10 @@ export function AboutSection() {
               <p className="text-xs text-zinc-400">
                 Interested in working on innovative projects, internships, or open-source initiatives together.
               </p>
-              <div className="flex items-center gap-2 pt-1">
+              <div className="flex flex-col sm:flex-row items-center gap-2 pt-1">
                 <a
                   href={`mailto:${HARSHIL_BIO.email}`}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-semibold text-xs transition-colors"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-semibold text-xs transition-colors"
                 >
                   <Mail className="w-3.5 h-3.5" />
                   Email Harshil

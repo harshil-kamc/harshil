@@ -1,8 +1,13 @@
 import { useState, FormEvent } from "react";
 import { HARSHIL_BIO } from "../data/portfolioData";
-import { Mail, Send, CheckCircle2, Github, Linkedin, MessageCircle, Sparkles } from "lucide-react";
+import { Send, CheckCircle2, Github, Linkedin, MessageCircle } from "lucide-react";
+import { FooterTips } from "./FooterTips";
 
-export function ContactSection() {
+interface ContactSectionProps {
+  onOpenPlayground?: () => void;
+}
+
+export function ContactSection({ onOpenPlayground }: ContactSectionProps) {
   const [formState, setFormState] = useState({ name: "", email: "", message: "" });
   const [submitted, setSubmitted] = useState(false);
 
@@ -20,7 +25,7 @@ export function ContactSection() {
 <div className="h-120" />
 
         {/* Contact Form Card */}
-        <div className="bg-transparent border border-white/10 rounded-3xl p-6 sm:p-10 shadow-2xl space-y-8">
+        <div className="bg-zinc-950/40 backdrop-blur-sm border border-white/10 rounded-3xl p-6 sm:p-10 shadow-2xl space-y-8">
           {submitted ? (
             <div className="text-center py-12 space-y-4 animate-in fade-in zoom-in duration-300">
               <div className="w-16 h-16 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 flex items-center justify-center mx-auto">
@@ -35,7 +40,7 @@ export function ContactSection() {
                   setSubmitted(false);
                   setFormState({ name: "", email: "", message: "" });
                 }}
-                className="px-6 py-2.5 rounded-full bg-zinc-900 border border-zinc-800 text-xs font-medium text-zinc-300 hover:text-white"
+                className="px-6 py-2.5 rounded-full bg-white/10 border border-white/10 text-xs font-medium text-zinc-300 hover:text-white"
               >
                 Send Another Message
               </button>
@@ -51,7 +56,7 @@ export function ContactSection() {
                     value={formState.name}
                     onChange={(e) => setFormState({ ...formState, name: e.target.value })}
                     placeholder="e.g. Alex Morgan"
-                    className="w-full px-4 py-3 bg-zinc-900/80 border border-white/10 rounded-xl text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500 transition-colors"
+                    className="w-full px-4 py-3 bg-zinc-950/40 backdrop-blur-xs border border-white/10 rounded-xl text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500 transition-colors"
                   />
                 </div>
 
@@ -63,7 +68,7 @@ export function ContactSection() {
                     value={formState.email}
                     onChange={(e) => setFormState({ ...formState, email: e.target.value })}
                     placeholder="alex@company.com"
-                    className="w-full px-4 py-3 bg-zinc-900/80 border border-white/10 rounded-xl text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500 transition-colors"
+                    className="w-full px-4 py-3 bg-zinc-950/40 backdrop-blur-xs border border-white/10 rounded-xl text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500 transition-colors"
                   />
                 </div>
               </div>
@@ -76,7 +81,7 @@ export function ContactSection() {
                   value={formState.message}
                   onChange={(e) => setFormState({ ...formState, message: e.target.value })}
                   placeholder="Hey Harshil, I liked your particle portfolio..."
-                  className="w-full px-4 py-3 bg-zinc-900/80 border border-white/10 rounded-xl text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500 transition-colors resize-none"
+                  className="w-full px-4 py-3 bg-zinc-950/40 backdrop-blur-xs border border-white/10 rounded-xl text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500 transition-colors resize-none"
                 />
               </div>
 
@@ -122,9 +127,13 @@ export function ContactSection() {
           </div>
         </div>
 
-        {/* Footer Bar */}
-        <div className="text-center text-xs text-zinc-600 font-mono pt-4">
-          © {new Date().getFullYear()} {HARSHIL_BIO.name} — All Rights Reserved.
+        {/* Footer Bar with Sliding Tips */}
+        <div className="pt-8 space-y-4">
+          <FooterTips onOpenPlayground={onOpenPlayground} />
+
+          <div className="text-center text-xs text-zinc-500 font-mono">
+            © {new Date().getFullYear()} <span className="font-semibold text-zinc-300">{HARSHIL_BIO.name}</span> — All Rights Reserved.
+          </div>
         </div>
       </div>
     </section>

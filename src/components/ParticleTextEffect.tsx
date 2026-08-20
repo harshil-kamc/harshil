@@ -137,7 +137,7 @@ interface ParticleTextEffectProps {
   key?: string | number;
 }
 
-const DEFAULT_WORDS = ["Hi", "I'm", "Harshil", "a CSE&IT Student","Explore my Portfolio"];
+const DEFAULT_WORDS = ["Hi", "I'm", "Harshil", "a student"];
 
 export function ParticleTextEffect({ words = DEFAULT_WORDS, cycleInterval = 240 }: ParticleTextEffectProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -149,7 +149,7 @@ export function ParticleTextEffect({ words = DEFAULT_WORDS, cycleInterval = 240 
   const wordsRef = useRef(words);
   wordsRef.current = words.length > 0 ? words : DEFAULT_WORDS;
 
-  const pixelSteps = 2;
+  const pixelSteps = 4;
   const drawAsPoints = true;
 
   useEffect(() => {
@@ -281,10 +281,11 @@ export function ParticleTextEffect({ words = DEFAULT_WORDS, cycleInterval = 240 
       const particles = particlesRef.current;
 
       // Dark gradient background
-     ctx.clearRect(0, 0, canvas.width, canvas.height);
-ctx.fillStyle = "#000";
-ctx.fillRect(0, 0, canvas.width, canvas.height);
-
+      const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+      grad.addColorStop(0, "rgba(10, 10, 10, 0.15)");
+      grad.addColorStop(1, "rgba(0, 0, 0, 0.35)");
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       for (let i = particles.length - 1; i >= 0; i--) {
         const particle = particles[i]!;
