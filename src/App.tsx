@@ -8,6 +8,7 @@ import { SkillsSection } from "./components/SkillsSection";
 import { ContactSection } from "./components/ContactSection";
 import { PlaygroundModal } from "./components/PlaygroundModal";
 import { DEFAULT_PARTICLE_IMAGES } from "./data/portfolioData";
+import { trackNewVisitor, trackParticleLabOpened } from "./utils/notificationTracker";
 
 const HERO_SEQUENCE = [
   "Hi",
@@ -25,6 +26,17 @@ export default function App() {
   const [particleMode, setParticleMode] = useState<"text" | "image">("text");
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [imageErrorMessage, setImageErrorMessage] = useState<string | null>(null);
+
+  // Track initial visitor session (once per session, no PII, no referrer)
+  useEffect(() => {
+    trackNewVisitor();
+  }, []);
+
+  // Track Particle Lab opening
+  const handleOpenPlayground = () => {
+    trackParticleLabOpened();
+    setIsPlaygroundOpen(true);
+  };
 
   // Scroll Section Intersection Observer
   useEffect(() => {
@@ -155,13 +167,13 @@ export default function App() {
       {/* Main Content Sections (Overlays over the particle canvas) */}
       <main className="relative z-10">
         <HeroSection
-          onOpenPlayground={() => setIsPlaygroundOpen(true)}
+          onOpenPlayground={handleOpenPlayground}
         />
         <AboutSection />
         <CompetitionsSection />
         <ProjectsSection />
         <SkillsSection />
-        <ContactSection onOpenPlayground={() => setIsPlaygroundOpen(true)} />
+        <ContactSection onOpenPlayground={handleOpenPlayground} />
       </main>
 
       {/* Particle Lab Playground Modal */}

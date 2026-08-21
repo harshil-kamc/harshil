@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { loadSafeCanvasImage, normalizeImageUrl, isLikelyImageUrl } from "../utils/imageUrlResolver";
+import { registerParticleInteraction } from "../utils/notificationTracker";
 
 interface Vector2D {
   x: number;
@@ -716,6 +717,9 @@ export function ParticleCanvasManager({
       return window.scrollY < window.innerHeight * 0.85;
     };
 
+    let dragThrottler = 0;
+    let pressStartTime = 0;
+
     const handleWindowMouseDown = (e: MouseEvent) => {
       if (!interactiveMode || !isHeroViewport()) return;
 
@@ -729,6 +733,7 @@ export function ParticleCanvasManager({
         mouseRef.current.isRightClick = false;
         mouseRef.current.x = (e.clientX - rect.left) * (canvas.width / rect.width);
         mouseRef.current.y = (e.clientY - rect.top) * (canvas.height / rect.height);
+        pressStartTime = Date.now();
       }
     };
 
@@ -748,10 +753,20 @@ export function ParticleCanvasManager({
 
       mouseRef.current.x = (e.clientX - rect.left) * (canvas.width / rect.width);
       mouseRef.current.y = (e.clientY - rect.top) * (canvas.height / rect.height);
+
+      // Throttled tracking for meaningful continuous particle dragging
+      const now = Date.now();
+      if (now - dragThrottler > 250) {
+        dragThrottler = now;
+        registerParticleInteraction("drag", 250);
+      }
     };
 
     const handleWindowMouseUp = (e: MouseEvent) => {
       if (e.button === 0) {
+        if (mouseRef.current.isPressed && Date.now() - pressStartTime > 400) {
+          registerParticleInteraction("drag", Date.now() - pressStartTime);
+        }
         mouseRef.current.isPressed = false;
         mouseRef.current.isRightClick = false;
       }
