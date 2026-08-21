@@ -257,7 +257,7 @@ function generateEmailHtml(data: {
             <td class="data-value data-value-highlight">${data.eventBadge}</td>
           </tr>
           <tr class="data-row">
-            <td class="data-label">Time</td>
+            <td class="data-label">Time (IST)</td>
             <td class="data-value">${data.timeFormatted}</td>
           </tr>
           <tr class="data-row">
@@ -323,7 +323,17 @@ export async function processNotification(req: Request, payload: NotificationPay
   const approximateLocation = await getApproximateLocation(req, ip);
 
   const dateObj = new Date(payload.timestamp || now);
-  const timeFormatted = `${dateObj.toUTCString()} (UTC)`;
+  const timeFormatted = new Intl.DateTimeFormat("en-IN", {
+    timeZone: "Asia/Kolkata",
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true,
+  }).format(dateObj) + " (IST)";
 
   // Match the exact 3 subjects requested
   let subject = "";
