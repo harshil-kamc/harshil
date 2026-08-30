@@ -78,7 +78,7 @@ export function FooterTips({ onOpenPlayground }: FooterTipsProps) {
             ? "-translate-x-10 opacity-0"
             : "translate-x-10 opacity-0"
         } ${
-          currentTip.action ? "cursor-pointer hover:text-emerald-400" : ""
+          currentTip.action ? "cursor-pointer hover:text-[#FF304F]" : ""
         } text-xs sm:text-sm text-zinc-400/90 text-center font-normal tracking-wide max-w-xl px-4`}
       >
         <span>{currentTip.text}</span>

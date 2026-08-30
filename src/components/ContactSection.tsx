@@ -28,7 +28,7 @@ export function ContactSection({ onOpenPlayground }: ContactSectionProps) {
         <div className="bg-zinc-950/40 backdrop-blur-sm border border-white/10 rounded-3xl p-6 sm:p-10 shadow-2xl space-y-8">
           {submitted ? (
             <div className="text-center py-12 space-y-4 animate-in fade-in zoom-in duration-300">
-              <div className="w-16 h-16 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 flex items-center justify-center mx-auto">
+              <div className="w-16 h-16 rounded-full bg-[#B5122D]/20 border border-[#FF304F]/40 text-[#FF304F] flex items-center justify-center mx-auto">
                 <CheckCircle2 className="w-8 h-8" />
               </div>
               <h3 className="text-2xl font-bold text-white">Message Sent Successfully!</h3>
@@ -40,7 +40,7 @@ export function ContactSection({ onOpenPlayground }: ContactSectionProps) {
                   setSubmitted(false);
                   setFormState({ name: "", email: "", message: "" });
                 }}
-                className="px-6 py-2.5 rounded-full bg-white/10 border border-white/10 text-xs font-medium text-zinc-300 hover:text-white"
+                className="px-6 py-2.5 rounded-full bg-white/10 border border-white/10 text-xs font-medium text-zinc-300 hover:text-white cursor-pointer"
               >
                 Send Another Message
               </button>
@@ -56,7 +56,7 @@ export function ContactSection({ onOpenPlayground }: ContactSectionProps) {
                     value={formState.name}
                     onChange={(e) => setFormState({ ...formState, name: e.target.value })}
                     placeholder="e.g. Alex Morgan"
-                    className="w-full px-4 py-3 bg-zinc-950/40 backdrop-blur-xs border border-white/10 rounded-xl text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500 transition-colors"
+                    className="w-full px-4 py-3 bg-zinc-950/40 backdrop-blur-xs border border-white/10 rounded-xl text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-[#FF304F] transition-colors"
                   />
                 </div>
 
@@ -68,7 +68,7 @@ export function ContactSection({ onOpenPlayground }: ContactSectionProps) {
                     value={formState.email}
                     onChange={(e) => setFormState({ ...formState, email: e.target.value })}
                     placeholder="alex@company.com"
-                    className="w-full px-4 py-3 bg-zinc-950/40 backdrop-blur-xs border border-white/10 rounded-xl text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500 transition-colors"
+                    className="w-full px-4 py-3 bg-zinc-950/40 backdrop-blur-xs border border-white/10 rounded-xl text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-[#FF304F] transition-colors"
                   />
                 </div>
               </div>
@@ -81,13 +81,13 @@ export function ContactSection({ onOpenPlayground }: ContactSectionProps) {
                   value={formState.message}
                   onChange={(e) => setFormState({ ...formState, message: e.target.value })}
                   placeholder="Hey Harshil, I liked your particle portfolio..."
-                  className="w-full px-4 py-3 bg-zinc-950/40 backdrop-blur-xs border border-white/10 rounded-xl text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500 transition-colors resize-none"
+                  className="w-full px-4 py-3 bg-zinc-950/40 backdrop-blur-xs border border-white/10 rounded-xl text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-[#FF304F] transition-colors resize-none"
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold text-sm transition-all shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2"
+                className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-[#FF304F] hover:bg-[#E52B50] text-white font-bold text-sm transition-all shadow-lg shadow-[#FF304F]/25 flex items-center justify-center gap-2 cursor-pointer"
               >
                 <Send className="w-4 h-4" />
                 Send Message
@@ -101,28 +101,28 @@ export function ContactSection({ onOpenPlayground }: ContactSectionProps) {
             <div className="flex items-center gap-4">
               <a
                 href="https://github.com/harshil-kamc"
-                target="blank"
+                target="_blank"
                 rel="noreferrer"
-                className="hover:text-emerald-400 transition-colors flex items-center gap-1"
+                className="hover:text-[#FF304F] transition-colors flex items-center gap-1"
               >
                 <Github className="w-4 h-4" /> GitHub
               </a>
               <a
                 href="https://in.linkedin.com/in/harshil-kamchetty-170a473bb"
-                target="blank"
+                target="_blank"
                 rel="noreferrer"
-                className="hover:text-emerald-400 transition-colors flex items-center gap-1"
+                className="hover:text-[#FF304F] transition-colors flex items-center gap-1"
               >
                 <Linkedin className="w-4 h-4" /> LinkedIn
               </a>
               <a
-  href="https://wa.me/916304654185"
-  target="_blank"
-  rel="noreferrer"
-  className="hover:text-emerald-400 transition-colors flex items-center gap-1"
->
-  <MessageCircle className="w-4 h-4" /> WhatsApp
-</a>
+                href="https://wa.me/916304654185"
+                target="_blank"
+                rel="noreferrer"
+                className="hover:text-[#FF304F] transition-colors flex items-center gap-1"
+              >
+                <MessageCircle className="w-4 h-4" /> WhatsApp
+              </a>
             </div>
           </div>
         </div>

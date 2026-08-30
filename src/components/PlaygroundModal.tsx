@@ -127,7 +127,7 @@ export function PlaygroundModal({
         </button>
 
         <div className="flex items-center gap-3">
-          <div className="p-3 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+          <div className="p-3 rounded-2xl bg-[#B5122D]/20 text-[#FF304F] border border-[#FF304F]/30">
             <Sparkles className="w-6 h-6" />
           </div>
           <div>
@@ -143,9 +143,9 @@ export function PlaygroundModal({
           <button
             type="button"
             onClick={() => setActiveTab("text")}
-            className={`flex items-center justify-center gap-2 py-2.5 rounded-xl transition-all ${
+            className={`flex items-center justify-center gap-2 py-2.5 rounded-xl transition-all cursor-pointer ${
               activeTab === "text"
-                ? "bg-emerald-500 text-zinc-950 font-bold shadow-md shadow-emerald-500/20"
+                ? "bg-[#FF304F] text-white font-bold shadow-md shadow-[#FF304F]/25"
                 : "text-zinc-400 hover:text-white"
             }`}
           >
@@ -155,9 +155,9 @@ export function PlaygroundModal({
           <button
             type="button"
             onClick={() => setActiveTab("image")}
-            className={`flex items-center justify-center gap-2 py-2.5 rounded-xl transition-all ${
+            className={`flex items-center justify-center gap-2 py-2.5 rounded-xl transition-all cursor-pointer ${
               activeTab === "image"
-                ? "bg-emerald-500 text-zinc-950 font-bold shadow-md shadow-emerald-500/20"
+                ? "bg-[#FF304F] text-white font-bold shadow-md shadow-[#FF304F]/25"
                 : "text-zinc-400 hover:text-white"
             }`}
           >
@@ -177,7 +177,7 @@ export function PlaygroundModal({
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
                 placeholder="e.g. HARSHIL, CREATIVE, DEVELOPER, INNOVATE"
-                className="w-full px-4 py-3 bg-zinc-900 border border-zinc-800 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500 font-mono"
+                className="w-full px-4 py-3 bg-zinc-900 border border-zinc-800 rounded-xl text-xs text-white focus:outline-none focus:border-[#FF304F] font-mono transition-colors"
               />
             </div>
 
@@ -187,7 +187,7 @@ export function PlaygroundModal({
                 <button
                   type="button"
                   onClick={() => handleQuickPreset(["HI", "I'm", "Harshil", "a student", ...DEFAULT_PARTICLE_IMAGES])}
-                  className="px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-300 hover:text-white hover:border-emerald-500/50 flex items-center gap-1.5 font-semibold text-emerald-400"
+                  className="px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-300 hover:text-white hover:border-[#FF304F]/40 flex items-center gap-1.5 font-semibold text-[#FF5370] cursor-pointer transition-colors"
                 >
                   <Sparkles className="w-3 h-3" />
                   Text + Image Hybrid Loop
@@ -195,14 +195,14 @@ export function PlaygroundModal({
                 <button
                   type="button"
                   onClick={() => handleQuickPreset(["HARSHIL", "FULLSTACK", "CREATIVE", "CODE"])}
-                  className="px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-300 hover:text-white hover:border-emerald-500/50"
+                  className="px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-300 hover:text-white hover:border-[#FF304F]/40 cursor-pointer transition-colors"
                 >
                   Developer Mindset
                 </button>
                 <button
                   type="button"
                   onClick={() => handleQuickPreset(["WELCOME", "TO", "MY", "PORTFOLIO"])}
-                  className="px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-300 hover:text-white hover:border-emerald-500/50"
+                  className="px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-300 hover:text-white hover:border-[#FF304F]/40 cursor-pointer transition-colors"
                 >
                   Welcome Greeting
                 </button>
@@ -213,13 +213,13 @@ export function PlaygroundModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 rounded-xl text-xs text-zinc-400 hover:text-white"
+                className="px-4 py-2 rounded-xl text-xs text-zinc-400 hover:text-white cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold text-xs transition-colors shadow-lg shadow-emerald-500/20"
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#FF304F] hover:bg-[#E52B50] text-white font-bold text-xs transition-colors shadow-lg shadow-[#FF304F]/25 cursor-pointer"
               >
                 <Play className="w-3.5 h-3.5 fill-current" /> Apply Text Sequence
               </button>
@@ -232,10 +232,10 @@ export function PlaygroundModal({
               <div className="space-y-1.5">
                 <label className="block text-xs font-medium text-zinc-300 flex items-center justify-between">
                   <span className="flex items-center gap-1.5">
-                    <Globe className="w-3.5 h-3.5 text-emerald-400" />
+                    <Globe className="w-3.5 h-3.5 text-[#FF5370]" />
                     <span>Image Link / Web URL:</span>
                   </span>
-                  <span className="text-[10px] text-emerald-400 font-mono">Any image address, Google Images</span>
+                  <span className="text-[10px] text-[#FF5370] font-mono">Any image address, Google Images</span>
                 </label>
                 <div className="relative">
                   <Link className="w-4 h-4 text-zinc-500 absolute left-3.5 top-3.5" />
@@ -245,20 +245,20 @@ export function PlaygroundModal({
                     value={imageUrlInput}
                     onChange={(e) => setImageUrlInput(e.target.value)}
                     placeholder="Paste image address here.."
-                    className="w-full pl-10 pr-24 py-3 bg-zinc-900 border border-zinc-800 rounded-xl text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500 font-mono"
+                    className="w-full pl-10 pr-24 py-3 bg-zinc-900 border border-zinc-800 rounded-xl text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#FF304F] font-mono transition-colors"
                   />
                   <button
                     type="submit"
-                    className="absolute right-1.5 top-1.5 bottom-1.5 px-3 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold text-[11px] transition-colors"
+                    className="absolute right-1.5 top-1.5 bottom-1.5 px-3 rounded-lg bg-[#FF304F] hover:bg-[#E52B50] text-white font-bold text-[11px] transition-colors cursor-pointer"
                   >
                     Render
                   </button>
                 </div>
                 <div className="flex flex-wrap gap-1.5 pt-1 text-[10px] font-mono text-zinc-500">
-                  <p className="px-1.5 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-400">1. Google Search images</p><br/>
-                  <p className="px-1.5 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-400">2. Choose an image</p><br/>
-                  <p className="px-1.5 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-400">3. Copy image address</p><br/>
-                  <p className="px-1.5 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-400">4. Paste it here & See the magic</p><br/>
+                  <p className="px-1.5 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-400">1. Google Search images</p>
+                  <p className="px-1.5 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-400">2. Choose an image</p>
+                  <p className="px-1.5 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-400">3. Copy image address</p>
+                  <p className="px-1.5 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-400">4. Paste it here & See the magic</p>
                 </div>
               </div>
             </form>
@@ -268,8 +268,8 @@ export function PlaygroundModal({
               <label className="block text-xs font-medium text-zinc-300">
                 Or Upload Image File from device:
               </label>
-              <label className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-zinc-900 border border-dashed border-zinc-700 hover:border-emerald-500 cursor-pointer text-xs text-zinc-300 hover:text-white transition-all">
-                <Upload className="w-4 h-4 text-emerald-400" />
+              <label className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-zinc-900 border border-dashed border-zinc-700 hover:border-[#FF304F] cursor-pointer text-xs text-zinc-300 hover:text-white transition-all">
+                <Upload className="w-4 h-4 text-[#FF5370]" />
                 <span>Choose PNG / JPG / WEBP File</span>
                 <input
                   type="file"
@@ -281,8 +281,8 @@ export function PlaygroundModal({
             </div>
 
             {uploadError && (
-              <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
+              <div className="p-3 rounded-xl bg-[#B5122D]/15 border border-[#B5122D]/30 text-[#FF5370] text-xs flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 text-[#FF304F] shrink-0" />
                 <span>{uploadError}</span>
               </div>
             )}
@@ -296,14 +296,14 @@ export function PlaygroundModal({
                     key={preset.name}
                     type="button"
                     onClick={() => handleImagePresetClick(preset.url)}
-                    className="p-2.5 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-emerald-500/60 text-left transition-all space-y-1 group"
+                    className="p-2.5 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-[#FF304F]/40 text-left transition-all space-y-1 group cursor-pointer"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-white group-hover:text-emerald-300">
+                      <span className="text-xs font-bold text-white group-hover:text-[#FF5370]">
                         {preset.name}
                       </span>
                       {currentImageUrl === preset.url && (
-                        <Check className="w-3.5 h-3.5 text-emerald-400" />
+                        <Check className="w-3.5 h-3.5 text-[#FF304F]" />
                       )}
                     </div>
                     <p className="text-[10px] text-zinc-400 truncate">{preset.desc}</p>
@@ -320,7 +320,7 @@ export function PlaygroundModal({
                   onSwitchToTextMode();
                   onClose();
                 }}
-                className="text-xs text-zinc-400 hover:text-emerald-400 transition-colors underline underline-offset-4"
+                className="text-xs text-zinc-400 hover:text-[#FF304F] transition-colors underline underline-offset-4 cursor-pointer"
               >
                 Reset to Text Mode
               </button>
@@ -328,7 +328,7 @@ export function PlaygroundModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 rounded-xl bg-zinc-900 text-xs text-zinc-300 hover:text-white"
+                className="px-4 py-2 rounded-xl bg-zinc-900 text-xs text-zinc-300 hover:text-white cursor-pointer"
               >
                 Close
               </button>
@@ -339,4 +339,3 @@ export function PlaygroundModal({
     </div>
   );
 }
-

@@ -123,6 +123,63 @@ class Particle {
   }
 }
 
+// Vibrant, non-red, non-crimson particle color palette (32 diverse, high-visibility colors against dark bg)
+export const PARTICLE_COLOR_PALETTE = [
+  // Pink / Magenta / Fuchsia (no red tones)
+  { r: 255, g: 0, b: 212 },   // Neon Magenta (#FF00D4)
+  { r: 236, g: 72, b: 153 },  // Vivid Fuchsia Pink (#EC4899)
+  { r: 244, g: 63, b: 190 },  // Hot Orchid Pink (#F43FBE)
+  { r: 255, g: 105, b: 180 }, // Electric Pink (#FF69B4)
+  { r: 249, g: 168, b: 212 }, // Pastel Bubblegum (#F9A8D4)
+
+  // Purple / Violet / Indigo
+  { r: 168, g: 85, b: 247 },  // Bright Violet (#A855F7)
+  { r: 139, g: 92, b: 246 },  // Radiant Purple (#8B5CF6)
+  { r: 192, g: 38, b: 211 },  // Neon Purple (#C026D3)
+  { r: 99, g: 102, b: 241 },  // Electric Indigo (#6366F1)
+  { r: 196, g: 181, b: 253 }, // Pastel Lavender (#C4B5FD)
+
+  // Blue / Sky / Periwinkle
+  { r: 59, g: 130, b: 246 },  // Royal Blue (#3B82F6)
+  { r: 37, g: 99, b: 235 },   // Electric Blue (#2563EB)
+  { r: 14, g: 165, b: 233 },  // Azure Sky (#0EA5E9)
+  { r: 147, g: 197, b: 253 }, // Pastel Soft Blue (#93C5FD)
+
+  // Cyan / Aqua / Turquoise
+  { r: 6, g: 182, b: 212 },   // Electric Cyan (#06B6D4)
+  { r: 20, g: 220, b: 240 },  // Turquoise Glow (#14DCF0)
+  { r: 8, g: 145, b: 178 },   // Deep Ocean Cyan (#0891B2)
+  { r: 103, g: 232, b: 249 }, // Pastel Mint Aqua (#67E8F9)
+
+  // Teal
+  { r: 20, g: 184, b: 166 },  // Vivid Teal (#14B8A6)
+  { r: 45, g: 212, b: 191 },  // Seafoam Teal (#2DD4BF)
+  { r: 13, g: 148, b: 136 },  // Deep Emerald Teal (#0D9488)
+
+  // Emerald / Green
+  { r: 16, g: 185, b: 129 },  // Bright Emerald (#10B981)
+  { r: 34, g: 197, b: 94 },   // Neon Spring Green (#22C55E)
+  { r: 52, g: 211, b: 153 },  // Mint Green (#34D399)
+  { r: 110, g: 231, b: 183 }, // Pastel Mint Green (#6EE7B7)
+
+  // Lime / Chartreuse
+  { r: 132, g: 204, b: 22 },  // Electric Lime (#84CC16)
+  { r: 163, g: 230, b: 53 },  // Bright Lime (#A3E635)
+  { r: 190, g: 242, b: 100 }, // Vivid Chartreuse (#BEF264)
+
+  // Yellow / Gold / Amber
+  { r: 250, g: 204, b: 21 },  // Vivid Canary Yellow (#FACC15)
+  { r: 253, g: 224, b: 71 },  // Sunshine Yellow (#FDE047)
+  { r: 251, g: 191, b: 36 },  // Radiant Gold (#FBBF24)
+  { r: 245, g: 158, b: 11 },  // Bright Amber (#F59E0B)
+  { r: 254, g: 240, b: 138 }, // Pastel Butter Yellow (#FEF08A)
+
+  // Orange (Pure orange, non-red)
+  { r: 249, g: 115, b: 22 },  // Vivid Electric Orange (#F97316)
+  { r: 251, g: 146, b: 60 },  // Tangerine Glow (#FB923C)
+  { r: 253, g: 186, b: 116 }, // Pastel Warm Peach/Orange (#FDBA74)
+];
+
 interface ParticleCanvasManagerProps {
   currentWord: string;
   wordSequence?: string[];
@@ -180,6 +237,8 @@ export function ParticleCanvasManager({
 
   const imageUrlRef = useRef(imageUrl);
   imageUrlRef.current = imageUrl;
+
+  const lastColorIndexRef = useRef<number>(-1);
 
   const intensityRef = useRef(intensity);
   intensityRef.current = intensity;
@@ -407,16 +466,15 @@ export function ParticleCanvasManager({
     }
     const pixels = imageData.data;
 
-    const colorPalette = [
-      { r: 16, g: 185, b: 129 },
-      { r: 59, g: 130, b: 246 },
-      { r: 139, g: 92, b: 246 },
-      { r: 236, g: 72, b: 153 },
-      { r: 245, g: 158, b: 11 },
-      { r: 6, g: 182, b: 212 },
-    ];
+    // Pick a random color from the vibrant non-red palette, guaranteeing consecutive words differ
+    const paletteLen = PARTICLE_COLOR_PALETTE.length;
+    let colorIndex = Math.floor(Math.random() * paletteLen);
+    if (paletteLen > 1 && colorIndex === lastColorIndexRef.current) {
+      colorIndex = (colorIndex + 1 + Math.floor(Math.random() * (paletteLen - 1))) % paletteLen;
+    }
+    lastColorIndexRef.current = colorIndex;
 
-    const randomColor = colorPalette[Math.floor(Math.random() * colorPalette.length)] || {
+    const randomColor = PARTICLE_COLOR_PALETTE[colorIndex] || {
       r: 52,
       g: 211,
       b: 153,
@@ -800,9 +858,12 @@ export function ParticleCanvasManager({
   return (
     <div className="fixed inset-0 pointer-events-auto z-0 overflow-hidden bg-[#0a0a0f]">
       <canvas ref={canvasRef} className="block w-full h-full cursor-crosshair" />
-      {/* Subtle particle status overlay showing actual real-time FPS */}
-      <div className="absolute bottom-3 right-4 text-[10px] text-zinc-500/60 font-mono pointer-events-none select-none">
-        {particleCount} PARTICLES | FPS {fpsDisplay}
+      {/* Discreet developer debug indicator */}
+      <div className="absolute bottom-3 right-4 text-[9px] text-zinc-600/70 hover:text-zinc-400 font-mono tracking-wider pointer-events-none select-none flex items-center gap-1.5 transition-colors">
+        <span className="w-1.5 h-1.5 rounded-full bg-[#FF304F]/60 inline-block"></span>
+        <span>{particleCount} PTS</span>
+        <span className="text-zinc-700">/</span>
+        <span>{fpsDisplay} FPS</span>
       </div>
     </div>
   );

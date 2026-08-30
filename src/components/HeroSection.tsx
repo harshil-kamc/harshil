@@ -21,10 +21,10 @@ export function HeroSection({ onOpenPlayground }: HeroSectionProps) {
 
         {/* Hero Title Overlay */}
         <div className="space-y-3">
-          <h1 className="text-2xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-white leading-none">
+          <h1 className="text-2xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-[#F5F5F5] leading-none">
             {HARSHIL_BIO.fullName}
           </h1>
-          <p className="text-lg sm:text-2xl font-medium text-emerald-400/90 tracking-wide font-mono">
+          <p className="text-lg sm:text-2xl font-medium text-[#FF304F] tracking-wide font-mono">
             {HARSHIL_BIO.role}
           </p>
         </div>
@@ -38,9 +38,9 @@ export function HeroSection({ onOpenPlayground }: HeroSectionProps) {
         <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
           <button
             onClick={onOpenPlayground}
-            className="flex items-center gap-2 px-6 py-3 rounded-full bg-zinc-950/40 hover:bg-white/10 border border-white/15 text-white font-medium text-sm backdrop-blur-sm transition-all shadow-xl hover:scale-105"
+            className="flex items-center gap-2 px-6 py-3 rounded-full bg-zinc-950/40 hover:bg-white/10 border border-white/15 hover:border-[#FF304F]/40 text-white font-medium text-sm backdrop-blur-sm transition-all shadow-xl hover:scale-105 cursor-pointer"
           >
-            <Sparkles className="w-4 h-4 text-emerald-400" />
+            <Sparkles className="w-4 h-4 text-[#FF304F]" />
             Launch Particle Lab
           </button>
         </div>
@@ -48,7 +48,7 @@ export function HeroSection({ onOpenPlayground }: HeroSectionProps) {
 
       <div className="flex flex-col items-center gap-1 text-xs text-zinc-400 font-mono animate-bounce pb-2">
        <br/><br/> <span>Scroll down for more details</span>
-        <ArrowDown className="w-3.5 h-3.5 text-emerald-400" />
+        <ArrowDown className="w-3.5 h-3.5 text-[#FF304F]" />
       </div>
     </section>
   );
