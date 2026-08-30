@@ -255,9 +255,9 @@ export function ParticleCanvasManager({
     const height = canvas?.height || (typeof window !== "undefined" ? window.innerHeight : 600);
     const minDim = Math.min(width, height);
 
-    let baseStep = 3;
+    let baseStep = 2;
     if (intensityRef.current === "vibrant") {
-      baseStep = 2;
+      baseStep = 1;
     } else if (intensityRef.current === "soft") {
       baseStep = 4;
     }
