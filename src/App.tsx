@@ -13,8 +13,8 @@ import { trackNewVisitor, trackParticleLabOpened } from "./utils/notificationTra
 const HERO_SEQUENCE = [
   "Hi",
   "I'm",
-  "Harshil",
-  "a student",
+  "Harshil.",
+  "Explore My Site",
   ...DEFAULT_PARTICLE_IMAGES,
 ];
 
