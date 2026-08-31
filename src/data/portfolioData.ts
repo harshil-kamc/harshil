@@ -228,9 +228,7 @@ export const HARSHIL_BIO = {
 };
 
 export const DEFAULT_PARTICLE_IMAGES = [
-  "https://i.ibb.co/8DpK0v51/264511853.png", 
-  "https://i.ibb.co/Rpjb0WL5/image-Photoroom.png",
-  "https://i.ibb.co/8DpK0v51/264511853.png",
+  "https://i.ibb.co/8DpK0v51/264511853.png"
 ];
 
 export const EXPERIENCE_DATA: ExperienceItem[] = [
