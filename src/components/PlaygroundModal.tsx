@@ -174,7 +174,6 @@ export function PlaygroundModal({
               </label>
               <input
                 type="text"
-                value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
                 placeholder="e.g. HARSHIL, CREATIVE, DEVELOPER, INNOVATE"
                 className="w-full px-4 py-3 bg-zinc-900 border border-zinc-800 rounded-xl text-xs text-white focus:outline-none focus:border-[#FF304F] font-mono transition-colors"
