@@ -13,6 +13,8 @@ export interface Project {
   hackathonName?: string;
   hackathonId?: string;
   isOther?: boolean;
+  imageUrl?: string;
+  screenshots?: string[];
 }
 
 export interface ExperienceItem {
@@ -53,6 +55,7 @@ export interface Competition {
   projectRole?: string;
   certificateUrl?: string;
   tags: string[];
+  images?: string[];
 }
 
 export interface EducationItem {

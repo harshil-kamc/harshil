@@ -1,4 +1,5 @@
 import { Project, ExperienceItem, SkillCategory, EducationItem, Competition } from "../types/portfolio";
+import { PageFlipLeaf } from "../components/lightswind/3d-image-pageflip";
 
 export const EDUCATION_DATA: EducationItem[] = [
   {
@@ -45,34 +46,37 @@ export const COMPETITIONS_LIST: Competition[] = [
     venue: "MVSR Engineering College",
     date: "5th – 6th December 2025",
     duration: "24 Hours Offline",
-    teamName: "Digital Piece",
     type: "CTF Hackathon",
-    result: "1st Place Winner 🏆",
-    isWinner: true,
+    result: "Team Participation",
     awardRank: "1st",
-    description: "A 24-hour intense Capture The Flag (CTF) cybersecurity hackathon conducted at MVSR Engineering College. Me and my team (Digital Piece) tackled challenging reverse engineering, web exploitation, network forensics, and cryptography challenges, successfully securing 1st place.",
+    description: "A 24-hour intense Capture The Flag (CTF) cybersecurity hackathon conducted at MVSR Engineering College. Tackled challenging reverse engineering, web exploitation, network forensics, and cryptography challenges, successfully securing 1st place.",
     projectOrFocus: "Reverse Engineering, Web Exploitation & Cryptography",
     certificateUrl: "https://drive.google.com/file/d/15VaArUe63LCN3V8rYNDbmTbmMgtcf5BE/view?usp=drive_link",
-    tags: ["1st Place", "CTF", "Cybersecurity", "24hr Hackathon", "IEEE", "Digital Piece"]
+    tags: [ "CTF", "Cybersecurity", "24hr Hackathon", "IEEE"]
   },
   {
     id: "comp-2",
-    title: "IEEE TKR Hackconquest",
+    title: "IEEE TKR Hackconquest 2.0",
     organizer: "TKR Engineering College & IEEE",
     venue: "TKR Engineering College",
     date: "27th – 28th February 2026",
     duration: "24 Hours Offline",
-    teamName: "Digital Piece",
     type: "Offline Hackathon",
     result: "Team Participation",
     awardRank: "Participant",
-    description: "A 24-hour offline hackathon conducted at TKR Engineering College. Built the DeepSafe project with team Digital Piece, collaborating on high-speed ideation, software architecture design, and rapid sprint prototyping.",
+    description: "A 24-hour offline hackathon conducted at TKR Engineering College. Built the DeepSafe project, collaborating on high-speed ideation, software architecture design, and rapid sprint prototyping.",
     projectOrFocus: "DeepSafe — AI-Powered Media Analysis System",
     projectId: "proj-deepsafe",
     projectName: "DeepSafe",
     projectRole: "Frontend dev",
     certificateUrl: "https://drive.google.com/file/d/1XyQZIW7M9b_6idwH1eGQdj4cMZjalrdu/view?usp=drive_link",
-    tags: ["Offline Hackathon", "24hr Sprint", "IEEE", "Digital Piece", "DeepSafe"]
+    tags: ["Offline Hackathon", "24hr Sprint", "IEEE", "DeepSafe"],
+    images: [
+      "https://i.ibb.co/RTB7MpXD/1788708407972-1.jpg",
+      "https://i.ibb.co/DHmDMh3F/1788708414500.jpg",
+      "https://i.ibb.co/N6Mbmb6x/1788708412392.jpg",
+      "https://i.ibb.co/Rpn1zjRV/1000023362.jpg"
+    ]
   },
   {
     id: "comp-3",
@@ -81,17 +85,16 @@ export const COMPETITIONS_LIST: Competition[] = [
     venue: "Online",
     date: "17th - 28th February 2026",
     duration: "Multi-Round Online Sprint",
-    teamName: "Digital Piece",
     type: "Online Hackathon",
     result: "Team Participation",
     awardRank: "Participant",
-    description: "An online hackathon organized by Unstop and Quizcred. Engineered the Localoop platform with team Digital Piece, solving competitive problem statements for seamless community-government interaction.",
+    description: "An online hackathon organized by Unstop and Quizcred. Engineered the Localoop platform, solving competitive problem statements for seamless community-government interaction.",
     projectOrFocus: "Localoop — Citizen & Governance Connecting Platform",
     projectId: "proj-localoop",
     projectName: "Localoop",
     projectRole: "Full Stack dev",
     certificateUrl: "https://drive.google.com/drive/folders/1kW6fo5xuhR7x9GVtyD-cKEr3H2yylgPt",
-    tags: ["Online Hackathon", "Unstop", "Quizcred", "Digital Piece", "Localoop"]
+    tags: ["Online Hackathon", "Unstop", "Quizcred", "Localoop"]
   },
   {
     id: "comp-4",
@@ -100,17 +103,16 @@ export const COMPETITIONS_LIST: Competition[] = [
     venue: "Online",
     date: "18th Feb – 22nd March 2026",
     duration: "Month-long Hackathon",
-    teamName: "Digital Piece",
     type: "Online Hackathon",
     result: "National Participant",
     awardRank: "Participant",
-    description: "A competitive national-level AI/ML hackathon organized by Vivriti Capital, Yuvaan, and Unstop. Built the AI Loan Lending Risk predictive model assessing credit risk for applicants using advanced algorithms with team Digital Piece.",
+    description: "A competitive national-level AI/ML hackathon organized by Vivriti Capital, Yuvaan, and Unstop. Built the AI Loan Lending Risk predictive model assessing credit risk for applicants using advanced algorithms.",
     projectOrFocus: "AI Loan Lending Risk — Predictive Credit Assessment Model",
     projectId: "proj-loan-risk",
     projectName: "AI Loan Lending Risk",
     projectRole: "Full Stack dev",
     certificateUrl: "https://drive.google.com/drive/folders/1kW6fo5xuhR7x9GVtyD-cKEr3H2yylgPt",
-    tags: ["AI/ML", "Vivriti Capital", "Yuvaan", "Unstop", "Data Science", "Digital Piece"]
+    tags: ["AI/ML", "Vivriti Capital", "Yuvaan", "Unstop", "Data Science"]
   },
   {
     id: "comp-5",
@@ -119,7 +121,6 @@ export const COMPETITIONS_LIST: Competition[] = [
     venue: "GFG Institution, Madhapur",
     date: "10th – 17th March 2026",
     duration: "1-Week Hackfest (Onsite Finale)",
-    teamName: "Digital Piece",
     type: "Offline Hackathon",
     result: "1st Prize Winner 🏆",
     isWinner: true,
@@ -130,7 +131,7 @@ export const COMPETITIONS_LIST: Competition[] = [
     projectName: "TruthNova",
     projectRole: "Frontend dev",
     certificateUrl: "https://drive.google.com/drive/folders/1kW6fo5xuhR7x9GVtyD-cKEr3H2yylgPt",
-    tags: ["1st Prize", "GeeksForGeeks", "GFG Madhapur", "TruthNova", "Digital Piece"]
+    tags: ["1st Prize", "GeeksForGeeks", "GFG Madhapur", "TruthNova"]
   },
   {
     id: "comp-6",
@@ -139,17 +140,16 @@ export const COMPETITIONS_LIST: Competition[] = [
     venue: "IIT Hyderabad",
     date: "27th – 29th March 2026",
     duration: "24 Hours Offline",
-    teamName: "Digital Piece",
     type: "Offline Hackathon",
     result: "Team Participation",
     awardRank: "Participant",
-    description: "An intensive 24-hour offline hackathon hosted at IIT Hyderabad by Forge Alumnus as part of Forge Inspira 2026. Developed OrbitHire — a full-stack platform tailored for job seekers to connect with employers with team Digital Piece.",
+    description: "An intensive 24-hour offline hackathon hosted at IIT Hyderabad by Forge Alumnus as part of Forge Inspira 2026. Developed OrbitHire — a full-stack platform tailored for job seekers to connect with employers.",
     projectOrFocus: "OrbitHire — Job Seeker & Employer Connection Platform",
     projectId: "proj-orbithire",
     projectName: "OrbitHire",
     projectRole: "Frontend dev",
     certificateUrl: "https://drive.google.com/drive/folders/1kW6fo5xuhR7x9GVtyD-cKEr3H2yylgPt",
-    tags: ["IIT Hyderabad", "Forge Inspira", "OrbitHire", "24hr Hackathon", "Digital Piece"]
+    tags: ["IIT Hyderabad", "Forge Inspira", "OrbitHire", "24hr Hackathon"]
   },
   {
     id: "comp-7",
@@ -175,17 +175,16 @@ export const COMPETITIONS_LIST: Competition[] = [
     venue: "MVSR Engineering College",
     date: "17th – 18th April 2026",
     duration: "24 Hours Offline",
-    teamName: "Digital Piece",
     type: "Offline Hackathon",
     result: "Team Participation",
     awardRank: "Participant",
-    description: "A 24-hour offline hackathon organized as part of the Samavarthan 2k26 national technical symposium at MVSR Engineering College. Developed PathPilot AI — an intelligent career guidance system with team Digital Piece.",
+    description: "A 24-hour offline hackathon organized as part of the Samavarthan 2k26 national technical symposium at MVSR Engineering College. Developed PathPilot AI — an intelligent career guidance system.",
     projectOrFocus: "PathPilot AI — Career Guidance & Roadmap Platform",
     projectId: "proj-pathpilot",
     projectName: "PathPilot AI",
     projectRole: "Backend dev",
     certificateUrl: "https://drive.google.com/drive/folders/1kW6fo5xuhR7x9GVtyD-cKEr3H2yylgPt",
-    tags: ["24hr Hackathon", "MVSR College", "PathPilot AI", "Samavarthan 2k26", "Digital Piece"]
+    tags: ["24hr Hackathon", "MVSR College", "PathPilot AI", "Samavarthan 2k26"]
   },
   {
     id: "comp-9",
@@ -205,11 +204,114 @@ export const COMPETITIONS_LIST: Competition[] = [
   }
 ];
 
+// Chronological 3D Flipbook Magazine leaves for hackathons & competitions
+// Sample images configured; user will provide direct competition images in the future
+export const COMPETITION_FLIPBOOK_PAGES: PageFlipLeaf[] = [
+  {
+    frontImage: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80",
+    frontTitle: "Hackathon Chronicles",
+    frontSubtitle: "Chronological Journey of 9 Hackathons, Sprints & Trophies",
+    frontBadge: "Cover • Vol 01",
+    backImage: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=800&q=80",
+    backTitle: "1. IEEE Cyber Ektha CTF",
+    backSubtitle: "MVSR Engineering College • 1st Place Winner ",
+    backBadge: "Dec 2025 • CTF",
+    backData: COMPETITIONS_LIST[0], 
+  },
+  {
+    frontImage: "https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&w=800&q=80",
+    frontTitle: "2. CodeSangram Hackathon",
+    frontSubtitle: "Quizcred & Unstop • Localoop Platform",
+    frontBadge: "Feb 2026 • Civic Tech",
+    frontData: COMPETITIONS_LIST[2], // comp-3 (CodeSangram: 17th Feb 2026)
+    backImage: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80",
+    backTitle: "3. National AI/ML Hackathon",
+    backSubtitle: "Vivriti Capital & Yuvaan • Credit Risk AI",
+    backBadge: "Feb 2026 • AI/ML",
+    backData: COMPETITIONS_LIST[3], // comp-4 (National AI/ML: 18th Feb 2026)
+  },
+  {
+    frontImage: "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&w=800&q=80",
+    frontTitle: "4. IEEE TKR Hackconquest",
+    frontSubtitle: "TKR Engineering College • DeepSafe Analyzer",
+    frontBadge: "Feb 2026 • 24hr Sprint",
+    frontData: COMPETITIONS_LIST[1], // comp-2 (IEEE TKR: 27th Feb 2026)
+    backImage: "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=800&q=80",
+    backTitle: "5. GFG Hackfest — 1st Prize ",
+    backSubtitle: "GeeksForGeeks Madhapur • TruthNova Fake News Detector",
+    backBadge: "Mar 2026 • 1st Prize",
+    backData: COMPETITIONS_LIST[4], // comp-5 (GFG Hackfest: 10th Mar 2026)
+  },
+  {
+    frontImage: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80",
+    frontTitle: "6. Forge Inspira 2026",
+    frontSubtitle: "IIT Hyderabad • OrbitHire Job Platform",
+    frontBadge: "Mar 2026 • IIT-H",
+    frontData: COMPETITIONS_LIST[5], // comp-6 (Forge Inspira: 27th Mar 2026)
+    backImage: "https://images.unsplash.com/photo-1541872703-74c5e44368f9?auto=format&fit=crop&w=800&q=80",
+    backTitle: "7. MYBHARAT Budget Quest ",
+    backSubtitle: "Ministry of Youth Affairs • Telangana State Winner",
+    backBadge: "Apr 2026 • State Winner",
+    backData: COMPETITIONS_LIST[6], // comp-7 (MYBHARAT: 12th Apr 2026)
+  },
+  {
+    frontImage: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=800&q=80",
+    frontTitle: "8. Aethronix Hackathon",
+    frontSubtitle: "Samavarthan 2k26 • PathPilot AI Career Guidance",
+    frontBadge: "Apr 2026 • AI Career",
+    frontData: COMPETITIONS_LIST[7], // comp-8 (Aethronix: 17th Apr 2026)
+    backImage: "https://images.unsplash.com/photo-1562813733-b31f71025d54?auto=format&fit=crop&w=800&q=80",
+    backTitle: "9. Secleaf Q2 CTF 2026",
+    backSubtitle: "International CTF • Binary Exploitation & Crypto",
+    backBadge: "May 2026 • Cyber CTF",
+    backData: COMPETITIONS_LIST[8], // comp-9 (Secleaf CTF: 23rd May 2026)
+  },
+  {
+    frontImage: "https://images.unsplash.com/photo-1578269174936-2709b6aeb913?auto=format&fit=crop&w=800&q=80",
+    frontTitle: "Milestones & Achievements",
+    frontSubtitle: "9 Hackathons Completed • 3 Winner Honors • 9.39 GPA",
+    frontBadge: "Summary",
+    frontData: {
+      id: "comp-summary",
+      title: "Hackathon Track Record & Milestones",
+      organizer: "Collegiate & National Circuit",
+      venue: "Hyderabad, Telangana & National",
+      date: "Dec 2025 – May 2026",
+      duration: "6 Months Intensive",
+      type: "Competition Portfolio",
+      result: "9 Hackathons • 3 Podium Wins",
+      isWinner: true,
+      awardRank: "1st",
+      description: "Comprehensive track record across 9 competitive hackathons and CTFs in 6 months, building civic tech platforms (Localoop), credit risk AI models, deepfake analyzers (DeepSafe), fake news detectors (TruthNova), AI hiring platforms (OrbitHire), and career guides (PathPilot AI).",
+      certificateUrl: COMPETITION_CERTIFICATES_DRIVE_URL,
+      tags: ["9 Hackathons", "3 Wins", "Civic Tech", "AI/ML", "Cybersecurity", "GPA 9.39"]
+    },
+    backImage: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80",
+    backTitle: "Certificate Vault",
+    backSubtitle: "Official Google Drive Certificate Archive & Verification",
+    backBadge: "Back Cover",
+    backData: {
+      id: "comp-vault",
+      title: "Official Certificate Archive & Verification",
+      organizer: "Google Drive Cloud Vault",
+      venue: "Drive Folder (Cloud Verified)",
+      date: "Dec 2025 – Present",
+      duration: "All-Time",
+      type: "Official Certificates",
+      result: "Verified Certificates & Honors",
+      isWinner: true,
+      description: "Direct cloud repository hosting high-resolution certificates of merit, winner awards, certificates of participation, and verification records across all 9 hackathons and collegiate technical events.",
+      certificateUrl: COMPETITION_CERTIFICATES_DRIVE_URL,
+      tags: ["Certificates", "Drive Archive", "Verification", "Proof of Work"]
+    }
+  },
+];
+
 export const HARSHIL_BIO = {
   name: "Harshil",
   fullName: "HARSHIL KAMCHETTY",
-  role: "Student Developer & Creative Technologist",
-  tagline: "Crafting interactive web experiences, algorithms, and high-performance applications with code & pixels.",
+  role: "Student Coder & Tech Enthusiast",
+  tagline: "Coding my way through technology, with a little help from AI.",
   aboutText: `I am a computer science student with a deep fascination for interactive graphics, full-stack systems, and elegant user interfaces. I love taking complex technical challenges and turning them into intuitive, visually fluid digital experiences.`,
   location: "Meerpet,500097",
   phone: "+91 6304654185",
@@ -228,7 +330,8 @@ export const HARSHIL_BIO = {
 };
 
 export const DEFAULT_PARTICLE_IMAGES = [
-  "https://i.ibb.co/8DpK0v51/264511853.png"
+  "https://i.ibb.co/8DpK0v51/264511853.png", 
+  
 ];
 
 export const EXPERIENCE_DATA: ExperienceItem[] = [
@@ -278,7 +381,7 @@ export const PROJECTS_DATA: Project[] = [
     title: "DeepSafe",
     role: "Frontend dev",
     description: "An AI-powered system designed to identify and analyze synthetic media to combat misinformation online.",
-    longDescription: "An AI-powered system designed to identify and analyze synthetic media to combat misinformation online. Built during the IEEE TKR Hackconquest 24-hr hackathon with team Digital Piece, focusing on real-time spatial and facial forgery detection interface workflows.",
+    longDescription: "An AI-powered system designed to identify and analyze synthetic media to combat misinformation online. Built during the IEEE TKR Hackconquest 24-hr hackathon, focusing on real-time spatial and facial forgery detection interface workflows.",
     category: "Full Stack",
     tags: ["React", "AI Detection", "Frontend", "Synthetic Media", "TKR Hackconquest"],
     featured: true,
@@ -286,14 +389,15 @@ export const PROJECTS_DATA: Project[] = [
     githubUrl: "https://github.com/harshil-kamc/DeepSafe",
     demoUrl: "https://deepsafe-dp.netlify.app/",
     hackathonName: "IEEE TKR Hackconquest",
-    hackathonId: "comp-2"
+    hackathonId: "comp-2",
+    imageUrl: "https://i.ibb.co/YBcT9Bw8/IMG-20260906-WA0009.jpg"
   },
   {
     id: "proj-pathpilot",
     title: "PathPilot AI",
     role: "Backend dev",
     description: "An intelligent career guidance system providing personalized roadmaps for students and professionals.",
-    longDescription: "An intelligent career guidance system providing personalized roadmaps for students and professionals. Developed during the Aethronix Hackathon (Samavarthan 2k26) at MVSR College with team Digital Piece, powering backend roadmap engines, data models, and adaptive recommendation APIs.",
+    longDescription: "An intelligent career guidance system providing personalized roadmaps for students and professionals. Developed during the Aethronix Hackathon (Samavarthan 2k26) at MVSR College, powering backend roadmap engines, data models, and adaptive recommendation APIs.",
     category: "AI & Tools",
     tags: ["Node.js", "AI Roadmaps", "Backend", "Career Guidance", "Samavarthan 2k26"],
     featured: true,
@@ -301,21 +405,33 @@ export const PROJECTS_DATA: Project[] = [
     githubUrl: "https://github.com/harshil-kamc/pathpilot-ai",
     demoUrl: "https://pathpilot-ai-ixzl.onrender.com/#",
     hackathonName: "Aethronix Hackathon (Samavarthan 2k26)",
-    hackathonId: "comp-8"
+    hackathonId: "comp-8",
+    imageUrl: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80"
   },
   {
     id: "proj-localoop",
     title: "Localoop",
     role: "Full Stack dev",
     description: "A dynamic platform bridging the gap between citizens and local governance for seamless communication.",
-    longDescription: "A dynamic platform bridging the gap between citizens and local governance for seamless communication. Engineered during CodeSangram Online Hackathon by Quizcred & Unstop with team Digital Piece, creating full-stack community issue logging, verification, and civic engagement pipelines.",
+    longDescription: "A dynamic platform bridging the gap between citizens and local governance for seamless communication. Engineered during CodeSangram Online Hackathon by Quizcred & Unstop, creating full-stack community issue logging, verification, and civic engagement pipelines.",
     category: "Full Stack",
     tags: ["Full Stack", "Civic Tech", "Local Governance", "Community", "CodeSangram"],
     featured: true,
     metrics: "CodeSangram Hackathon",
     githubUrl: "https://github.com/harshil-kamc/LocaLoop",
     hackathonName: "CodeSangram Online Hackathon",
-    hackathonId: "comp-3"
+    hackathonId: "comp-3",
+    imageUrl: "https://i.ibb.co/qL8bww5T/IMG-20260912-WA0003.jpg",
+    screenshots: [
+      "https://i.ibb.co/qL8bww5T/IMG-20260912-WA0003.jpg",
+      "https://i.ibb.co/TMVFz1z4/IMG-20260912-WA0010.jpg",
+      "https://i.ibb.co/bgcmDZBX/IMG-20260912-WA0009.jpg",
+      "https://i.ibb.co/zh34XT7L/IMG-20260912-WA0008.jpg",
+      "https://i.ibb.co/N6g90kR8/IMG-20260912-WA0007.jpg",
+      "https://i.ibb.co/prPvPdDK/IMG-20260912-WA0006.jpg",
+      "https://i.ibb.co/rRG2dxV7/IMG-20260912-WA0005.jpg",
+      "https://i.ibb.co/pvHFgt70/IMG-20260912-WA0004.jpg"
+    ]
   },
   {
     id: "proj-truthnova",
@@ -328,33 +444,39 @@ export const PROJECTS_DATA: Project[] = [
     featured: true,
     metrics: "1st Prize Winner 🏆",
     hackathonName: "GFG Hackfest (1st Prize Winner)",
-    hackathonId: "comp-5"
+    hackathonId: "comp-5",
+    imageUrl: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=800&q=80"
   },
   {
     id: "proj-orbithire",
     title: "OrbitHire",
     role: "Frontend dev",
     description: "A robust full-stack platform tailored for job seekers to connect efficiently with employers.",
-    longDescription: "A robust full-stack platform tailored for job seekers to connect efficiently with employers. Engineered during Forge Inspira 2026 at IIT Hyderabad with team Digital Piece, featuring streamlined candidate workflows and talent-matching UI.",
+    longDescription: "A robust full-stack platform tailored for job seekers to connect efficiently with employers. Engineered during Forge Inspira 2026 at IIT Hyderabad, featuring streamlined candidate workflows and talent-matching UI.",
     category: "Full Stack",
     tags: ["Frontend", "Recruitment Hub", "Job Seeker Platform", "IIT Hyderabad", "Forge Inspira"],
     featured: false,
     metrics: "Forge Inspira (IIT-H)",
     hackathonName: "Forge Inspira 2026",
-    hackathonId: "comp-6"
+    hackathonId: "comp-6",
+    imageUrl: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80"
   },
   {
     id: "proj-loan-risk",
     title: "AI Loan Lending Risk",
     role: "Full Stack dev",
     description: "Predictive analysis model assessing credit risk for applicants using advanced algorithms.",
-    longDescription: "Predictive analysis model assessing credit risk for applicants using advanced algorithms. Created during the National AI/ML Hackathon by Vivriti Capital, Yuvaan & Unstop with team Digital Piece.",
+    longDescription: "Predictive analysis model assessing credit risk for applicants using advanced algorithms. Created during the National AI/ML Hackathon by Vivriti Capital, Yuvaan & Unstop.",
     category: "AI & Tools",
     tags: ["Full Stack", "Predictive Analytics", "Credit Risk", "Machine Learning", "Vivriti Hackathon"],
     featured: false,
     metrics: "National AI/ML Hackathon",
     hackathonName: "National AI/ML Hackathon",
-    hackathonId: "comp-4"
+    hackathonId: "comp-4",
+    imageUrl: "https://i.ibb.co/TDzy8Sj5/image.png",
+    screenshots: [
+      "https://i.ibb.co/TDzy8Sj5/image.png"
+    ]
   },
   {
     id: "proj-clock",
@@ -366,7 +488,8 @@ export const PROJECTS_DATA: Project[] = [
     tags: ["MATLAB", "Scripting", "Mathematical Simulation", "Graphics"],
     featured: false,
     metrics: "Mathematical Simulation",
-    isOther: true
+    isOther: true,
+    imageUrl: "https://images.unsplash.com/photo-1509228468518-180dd4864904?auto=format&fit=crop&w=800&q=80"
   }
 ];
 

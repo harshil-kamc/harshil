@@ -1,275 +1,364 @@
-import { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { PROJECTS_DATA } from "../data/portfolioData";
 import { Project } from "../types/portfolio";
-import { ExternalLink, Code2, ChevronRight, X, Trophy, Layers } from "lucide-react";
+import { CoverflowCarousel, CoverflowSlide } from "@/components/ui/coverflow-carousel";
+import {
+  ExternalLink,
+  Code2,
+  X,
+  Trophy,
+  Maximize2,
+  ChevronLeft,
+  ChevronRight,
+  Images,
+} from "lucide-react";
 
 export function ProjectsSection() {
-  const [activeCategory, setActiveCategory] = useState<string>("All");
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [activeProjectIndex, setActiveProjectIndex] = useState(0);
+  const [activeScreenshotIndex, setActiveScreenshotIndex] = useState(0);
 
-  const categories = ["All", "Hackathons", "Full Stack", "AI & Tools"];
+  const handleOpenProject = (proj: Project) => {
+    setSelectedProject(proj);
+    setActiveScreenshotIndex(0);
+  };
 
-  const mainProjects = PROJECTS_DATA.filter((p) => !p.isOther);
-  const otherProjects = PROJECTS_DATA.filter((p) => p.isOther);
+  // Close modal on Escape key and prevent background body scrolling
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setSelectedProject(null);
+      }
+    };
 
-  const filteredMainProjects = activeCategory === "All" 
-    ? mainProjects
-    : activeCategory === "Hackathons"
-    ? mainProjects.filter((p) => Boolean(p.hackathonName))
-    : mainProjects.filter((p) => p.category === activeCategory);
+    if (selectedProject) {
+      window.addEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = "hidden";
+    }
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = "";
+    };
+  }, [selectedProject]);
+
+  // Convert PROJECTS_DATA to CoverflowSlide items
+  const coverflowSlides: CoverflowSlide[] = useMemo(() => {
+    return PROJECTS_DATA.map((proj) => ({
+      src:
+        proj.imageUrl ||
+        "https://images.unsplash.com/photo-1633419461186-7d40a38105ec?auto=format&fit=crop&w=800&q=80",
+      alt: proj.title,
+      title: proj.title,
+      subtitle: proj.role ? `${proj.role} • ${proj.category}` : proj.category,
+      meta: [
+        { label: "Category", value: proj.category },
+        ...(proj.role ? [{ label: "Role", value: proj.role }] : []),
+        ...(proj.hackathonName ? [{ label: "Hackathon", value: proj.hackathonName }] : []),
+        ...(proj.metrics ? [{ label: "Award / Recognition", value: proj.metrics }] : []),
+      ],
+      data: proj,
+    }));
+  }, []);
+
+  const activeProject = PROJECTS_DATA[activeProjectIndex] || PROJECTS_DATA[0];
+
+  const handleSlideClick = (_slide: CoverflowSlide, index: number) => {
+    const proj = PROJECTS_DATA[index];
+    if (proj) {
+      handleOpenProject(proj);
+    }
+  };
 
   return (
-    <section id="projects" className="relative py-28 px-4 z-10 font-sans">
-      <div className="max-w-6xl mx-auto space-y-12">
-    
-        {/* Main Projects Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredMainProjects.map((proj) => {
-            const hasGithub = proj.githubUrl && proj.githubUrl !== "#";
-            const hasDemo = proj.demoUrl && proj.demoUrl !== "#";
+    <section id="projects" className="pt-24 pb-8 px-4 sm:px-6 max-w-7xl mx-auto relative font-sans z-10">
+      {/* Top Section Header */}
+      <div className="h-80 min-h-[17.5rem] w-full pointer-events-none" aria-hidden="true" />
 
-            return (
-              <div
-                key={proj.id}
-                onClick={() => setSelectedProject(proj)}
-                className="group cursor-pointer bg-zinc-950/40 border border-white/10 rounded-3xl p-5 md:p-6 flex flex-col justify-between h-full shadow-2xl hover:border-[#FF304F]/40 hover:bg-white/[0.04] hover:scale-[1.01] transition-all duration-300 relative overflow-hidden backdrop-blur-sm"
-              >
-                <div>
-                  {/* Top Header: Title & Badges */}
-                  <div className="flex items-start justify-between gap-2 mb-2">
-                    <h4 className="text-lg md:text-xl font-bold text-[#F5F5F5] group-hover:text-[#FF5370] transition-colors">
-                      {proj.title}
-                    </h4>
-                    {proj.hackathonName && (
-                      <span className="shrink-0 inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#B5122D]/15 border border-[#B5122D]/30 text-[#FF5370] text-[10px] font-mono">
-                        <Trophy className="w-2.5 h-2.5 text-[#FF304F]" />
-                        Hackathon
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Role Badge - Two shades of red: Shade 2 (Crimson/Cardinal) */}
-                  {proj.role && (
-                    <div className="mb-3">
-                      <span className="inline-block px-3 py-1 bg-[#B5122D]/15 border border-[#B5122D]/30 text-[#FF5370] text-xs font-semibold rounded-full font-mono">
-                        Role: {proj.role}
-                      </span>
-                    </div>
-                  )}
-
-                  {/* Linked Hackathon Info Pill */}
-                  {proj.hackathonName && (
-                    <div className="mb-3">
-                      <span className="text-[11px] text-zinc-400 font-mono flex items-center gap-1.5 bg-white/5 border border-white/10 px-2.5 py-1 rounded-xl">
-                        <span className="text-[#FF304F]">⚡</span>
-                        <span>{proj.hackathonName}</span>
-                      </span>
-                    </div>
-                  )}
-
-                  {/* Description */}
-                  <p className="text-xs md:text-sm text-[#9A9AA3] leading-relaxed flex-grow">
-                    {proj.description}
-                  </p>
-                </div>
-
-                {/* Actions Footer */}
-                <div className="flex flex-row gap-3 mt-6 pt-5 border-t border-white/10 w-full" onClick={(e) => e.stopPropagation()}>
-                  {hasGithub ? (
-                    <a
-                      href={proj.githubUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group/btn flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-white/5 border border-white/10 text-white text-xs sm:text-sm font-semibold rounded-xl hover:bg-white/15 hover:border-[#FF304F]/30 hover:-translate-y-0.5 transition-all duration-300 backdrop-blur-md"
-                    >
-                      <svg className="w-4 h-4 transform group-hover/btn:scale-110 transition-transform duration-300" fill="currentColor" viewBox="0 0 24 24">
-                        <path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clipRule="evenodd"/>
-                      </svg>
-                      <span>GitHub</span>
-                    </a>
-                  ) : (
-                    <button
-                      onClick={() => setSelectedProject(proj)}
-                      className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2.5 bg-white/5 border border-white/10 text-zinc-400 text-xs sm:text-sm font-medium rounded-xl hover:bg-white/10 hover:text-white transition-all cursor-pointer"
-                    >
-                      <Code2 className="w-3.5 h-3.5" />
-                      <span>Details</span>
-                    </button>
-                  )}
-
-                  {hasDemo ? (
-                    <a
-                      href={proj.demoUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group/btn flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#FF304F] to-[#B5122D] text-white text-xs sm:text-sm font-semibold rounded-xl hover:shadow-[0_0_20px_rgba(255,48,79,0.4)] hover:-translate-y-0.5 transition-all duration-300"
-                    >
-                      <span>View Site</span>
-                      <ExternalLink className="w-3.5 h-3.5 transform group-hover/btn:translate-x-0.5 transition-transform" />
-                    </a>
-                  ) : (
-                    <button
-                      onClick={() => setSelectedProject(proj)}
-                      className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2.5 bg-[#B5122D]/15 border border-[#B5122D]/30 text-[#FF5370] text-xs sm:text-sm font-medium rounded-xl hover:bg-[#B5122D]/25 transition-all cursor-pointer"
-                    >
-                      <span>Overview</span>
-                      <ChevronRight className="w-3.5 h-3.5" />
-                    </button>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Other Projects Subsection */}
-        {(activeCategory === "All" || activeCategory === "All Projects") && otherProjects.length > 0 && (
-          <div className="pt-8 border-t border-white/10 space-y-6">
-            <h3 className="text-lg md:text-xl text-[#FF5370] font-semibold flex items-center gap-2">
-              <Layers className="w-5 h-5 text-[#FF304F]" />
-              <span>Other Projects</span>
-            </h3>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {otherProjects.map((p) => (
-                <div
-                  key={p.id}
-                  onClick={() => setSelectedProject(p)}
-                  className="cursor-pointer bg-zinc-950/40 border border-white/10 rounded-3xl p-5 md:p-6 flex flex-col justify-between shadow-2xl hover:border-[#FF304F]/40 hover:bg-white/[0.04] transition-all backdrop-blur-sm"
-                >
-                  <div className="space-y-2">
-                    <h4 className="text-lg md:text-xl font-bold text-white group-hover:text-[#FF5370]">
-                      {p.title}
-                    </h4>
-                    {p.role && (
-                      <span className="inline-block px-3 py-1 bg-[#B5122D]/15 border border-[#B5122D]/30 text-[#FF5370] text-xs font-semibold rounded-full font-mono">
-                        {p.role}
-                      </span>
-                    )}
-                    <p className="text-xs md:text-sm text-[#9A9AA3] leading-relaxed pt-1">
-                      {p.description}
-                    </p>
-                  </div>
-
-                  <div className="pt-4 mt-4 border-t border-white/5 flex items-center justify-between text-xs text-zinc-400 font-mono">
-                    <div className="flex flex-wrap gap-1.5">
-                      {p.tags.map((t, idx) => (
-                        <span key={idx} className="px-2 py-0.5 rounded bg-white/5 border border-white/5 text-[10px]">
-                          #{t}
-                        </span>
-                      ))}
-                    </div>
-                    <span className="text-[#FF304F] text-xs flex items-center gap-1 hover:underline">
-                      Inspect details →
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Project Detail Modal */}
-        {selectedProject && (
-          <div
-            id="project-detail-modal"
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200"
-            onClick={() => setSelectedProject(null)}
-          >
-            <div
-              className="bg-zinc-950/90 border border-zinc-800 rounded-3xl max-w-2xl w-full p-6 sm:p-8 space-y-6 shadow-2xl relative text-white max-h-[90vh] overflow-y-auto backdrop-blur-md"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <button
-                id="close-project-modal-btn"
-                onClick={() => setSelectedProject(null)}
-                className="absolute top-5 right-5 p-2 rounded-full bg-white/10 border border-white/10 text-zinc-400 hover:text-white hover:bg-white/20 transition-all cursor-pointer"
-              >
-                <X className="w-5 h-5" />
-              </button>
-
-              <div className="space-y-3">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-xs font-mono text-[#FF304F] bg-[#B5122D]/15 border border-[#B5122D]/30 px-3 py-1 rounded-full">
-                    {selectedProject.category}
-                  </span>
-                  {selectedProject.role && (
-                    <span className="text-xs font-mono text-[#FF5370] bg-[#B5122D]/15 border border-[#B5122D]/30 px-3 py-1 rounded-full">
-                      Role: {selectedProject.role}
-                    </span>
-                  )}
-                  {selectedProject.hackathonName && (
-                    <span className="text-xs font-mono text-[#FF5370] bg-[#B5122D]/15 border border-[#B5122D]/30 px-3 py-1 rounded-full flex items-center gap-1">
-                      <Trophy className="w-3 h-3 text-[#FF304F]" />
-                      {selectedProject.hackathonName}
-                    </span>
-                  )}
-                </div>
-
-                <h3 className="text-2xl font-extrabold text-white">
-                  {selectedProject.title}
-                </h3>
-              </div>
-
-              <div className="p-5 rounded-2xl bg-white/5 border border-white/10 space-y-3">
-                <p className="text-zinc-300 text-sm leading-relaxed">
-                  {selectedProject.longDescription || selectedProject.description}
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <span className="text-xs font-mono text-zinc-400">TECHNOLOGY STACK & TAGS</span>
-                <div className="flex flex-wrap gap-2">
-                  {selectedProject.tags.map((t, i) => (
-                    <span
-                      key={i}
-                      className="px-3 py-1 rounded-lg bg-[#B5122D]/15 border border-[#B5122D]/30 text-[#FF5370] text-xs font-mono"
-                    >
-                      {t}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Action Buttons: GitHub Code Files & Live Page */}
-              <div className="pt-4 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3">
-                <div className="flex items-center gap-3 w-full sm:w-auto">
-                  {selectedProject.githubUrl && selectedProject.githubUrl !== "#" ? (
-                    <a
-                      href={selectedProject.githubUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 text-white font-semibold text-xs transition-all hover:scale-105"
-                    >
-                      <Code2 className="w-4 h-4 text-[#FF304F]" />
-                      GitHub Repository
-                    </a>
-                  ) : null}
-
-                  {selectedProject.demoUrl && selectedProject.demoUrl !== "#" ? (
-                    <a
-                      href={selectedProject.demoUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#FF304F] to-[#B5122D] hover:from-[#E52B50] hover:to-[#9B111E] text-white font-bold text-xs transition-all shadow-lg shadow-[#FF304F]/25 hover:scale-105"
-                    >
-                      <ExternalLink className="w-4 h-4" />
-                      View Live Site
-                    </a>
-                  ) : null}
-                </div>
-
-                <button
-                  onClick={() => setSelectedProject(null)}
-                  className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-zinc-400 hover:text-white text-xs font-medium transition-colors cursor-pointer"
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+      {/* 3D Coverflow Carousel Showcase */}
+      <div className="relative w-full max-w-5xl mx-auto py-2">
+        <CoverflowCarousel
+          slides={coverflowSlides}
+          cardWidth="clamp(240px, 30vw, 360px)"
+          rotate={42}
+          depth={0.7}
+          perspective={3}
+          falloff={0.6}
+          fade={0.15}
+          gap={0.06}
+          loop={true}
+          showCaption={false}
+          showNavigation={true}
+          showPagination={false}
+          onSlideClick={handleSlideClick}
+          onActiveChange={(idx) => setActiveProjectIndex(idx)}
+        />
       </div>
+
+      {/* Active Project Highlight Banner & Action Bar */}
+      {activeProject && (
+        <div className="max-w-2xl mx-auto mt-6 p-6 rounded-3xl bg-zinc-950/70 border border-white/15 backdrop-blur-md text-center space-y-4 shadow-2xl animate-in fade-in duration-300">
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            <span className="text-xs font-mono px-3 py-1 rounded-full bg-[#0891B2]/20 border border-[#0891B2]/30 text-[#00F0FF]">
+              {activeProject.category}
+            </span>
+            {activeProject.role && (
+              <span className="text-xs font-mono px-3 py-1 rounded-full bg-white/5 border border-white/10 text-zinc-300">
+                {activeProject.role}
+              </span>
+            )}
+            {activeProject.hackathonName && (
+              <span className="text-xs font-mono px-3 py-1 rounded-full bg-[#0891B2]/25 border border-[#00F0FF]/30 text-[#38BDF8] flex items-center gap-1">
+                <Trophy className="w-3 h-3 text-[#00F0FF]" />
+                {activeProject.hackathonName}
+              </span>
+            )}
+            {activeProject.metrics && (
+              <span className="text-xs font-mono px-3 py-1 rounded-full bg-emerald-950/40 border border-emerald-500/30 text-emerald-400">
+                {activeProject.metrics}
+              </span>
+            )}
+          </div>
+
+          <div>
+            <h3 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+              {activeProject.title}
+            </h3>
+            <p className="text-xs sm:text-sm text-zinc-400 mt-2 max-w-xl mx-auto line-clamp-2">
+              {activeProject.description}
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+            <button
+              onClick={() => handleOpenProject(activeProject)}
+              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-[#00F0FF] hover:bg-[#38BDF8] text-zinc-950 font-bold text-xs font-mono transition-all shadow-lg shadow-[#00F0FF]/25 hover:scale-105 cursor-pointer"
+            >
+              <Maximize2 className="w-4 h-4" />
+              <span>Inspect Project Details</span>
+            </button>
+
+            {activeProject.demoUrl && activeProject.demoUrl !== "#" && (
+              <a
+                href={activeProject.demoUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 text-white font-semibold text-xs font-mono transition-all hover:scale-105"
+              >
+                <ExternalLink className="w-3.5 h-3.5 text-[#00F0FF]" />
+                <span>Live Site</span>
+              </a>
+            )}
+
+            {activeProject.githubUrl && activeProject.githubUrl !== "#" && (
+              <a
+                href={activeProject.githubUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 text-zinc-300 hover:text-white font-semibold text-xs font-mono transition-all hover:scale-105"
+              >
+                <Code2 className="w-3.5 h-3.5 text-[#00F0FF]" />
+                <span>GitHub Repo</span>
+              </a>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Project Detail Modal (Original faithful design) */}
+      {selectedProject && (
+        <div
+          id="project-detail-modal"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200"
+          onClick={() => setSelectedProject(null)}
+        >
+          <div
+            className="bg-zinc-950/95 border border-white/15 rounded-3xl max-w-2xl w-full p-6 sm:p-8 space-y-6 shadow-2xl relative text-white max-h-[90vh] overflow-y-auto backdrop-blur-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              id="close-project-modal-btn"
+              onClick={() => setSelectedProject(null)}
+              className="absolute top-5 right-5 p-2 rounded-full bg-white/10 border border-white/10 text-zinc-400 hover:text-white hover:bg-white/20 transition-all cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            {/* Modal Header with Image Banner / Gallery */}
+            {selectedProject.imageUrl && (
+              <div className="space-y-3">
+                <div className="relative h-48 sm:h-64 w-full rounded-2xl overflow-hidden border border-white/10 shadow-lg bg-black/60 group">
+                  <img
+                    src={
+                      selectedProject.screenshots && selectedProject.screenshots.length > 0
+                        ? selectedProject.screenshots[activeScreenshotIndex]
+                        : selectedProject.imageUrl
+                    }
+                    alt={selectedProject.title}
+                    className="w-full h-full object-contain bg-zinc-950/80"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/70 via-transparent to-black/20 pointer-events-none" />
+
+                  {/* Top Badges */}
+                  <div className="absolute top-3 left-3 right-12 flex items-center justify-between pointer-events-none">
+                    <span className="text-xs font-mono px-3 py-1 rounded-full bg-black/75 border border-white/20 text-[#00F0FF] backdrop-blur-md">
+                      {selectedProject.category}
+                    </span>
+                    {selectedProject.screenshots && selectedProject.screenshots.length > 1 && (
+                      <span className="text-xs font-mono px-2.5 py-1 rounded-full bg-black/80 border border-[#00F0FF]/30 text-[#00F0FF] backdrop-blur-md flex items-center gap-1.5">
+                        <Images className="w-3.5 h-3.5" />
+                        {activeScreenshotIndex + 1} / {selectedProject.screenshots.length}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Previous / Next Arrow Controls */}
+                  {selectedProject.screenshots && selectedProject.screenshots.length > 1 && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActiveScreenshotIndex((prev) =>
+                            prev === 0 ? selectedProject.screenshots!.length - 1 : prev - 1
+                          );
+                        }}
+                        className="absolute left-3 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/65 hover:bg-black/90 border border-white/20 text-white transition-all cursor-pointer hover:scale-110"
+                        aria-label="Previous screenshot"
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActiveScreenshotIndex((prev) =>
+                            prev === selectedProject.screenshots!.length - 1 ? 0 : prev + 1
+                          );
+                        }}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/65 hover:bg-black/90 border border-white/20 text-white transition-all cursor-pointer hover:scale-110"
+                        aria-label="Next screenshot"
+                      >
+                        <ChevronRight className="w-4 h-4" />
+                      </button>
+                    </>
+                  )}
+
+                  {selectedProject.role && (
+                    <div className="absolute bottom-3 left-4 pointer-events-none">
+                      <span className="text-xs font-mono px-3 py-1 rounded-full bg-black/75 border border-white/20 text-zinc-300 backdrop-blur-md">
+                        Role: {selectedProject.role}
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Screenshot Thumbnails Strip */}
+                {selectedProject.screenshots && selectedProject.screenshots.length > 1 && (
+                  <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-thin">
+                    {selectedProject.screenshots.map((shot, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => setActiveScreenshotIndex(idx)}
+                        className={`relative shrink-0 w-16 h-12 rounded-lg overflow-hidden border transition-all cursor-pointer ${
+                          idx === activeScreenshotIndex
+                            ? "border-[#00F0FF] ring-2 ring-[#00F0FF]/40 scale-105"
+                            : "border-white/10 opacity-60 hover:opacity-100 hover:border-white/30"
+                        }`}
+                      >
+                        <img
+                          src={shot}
+                          alt={`${selectedProject.title} screenshot ${idx + 1}`}
+                          className="w-full h-full object-cover"
+                        />
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            <div className="space-y-3">
+              <div className="flex flex-wrap items-center gap-2">
+                {selectedProject.hackathonName && (
+                  <span className="text-xs font-mono text-[#38BDF8] bg-[#0891B2]/20 border border-[#0891B2]/30 px-3 py-1 rounded-full flex items-center gap-1.5">
+                    <Trophy className="w-3.5 h-3.5 text-[#00F0FF]" />
+                    {selectedProject.hackathonName}
+                  </span>
+                )}
+                {selectedProject.metrics && (
+                  <span className="text-xs font-mono text-emerald-400 bg-emerald-950/40 border border-emerald-500/30 px-3 py-1 rounded-full">
+                    {selectedProject.metrics}
+                  </span>
+                )}
+              </div>
+
+              <h3 className="text-2xl sm:text-3xl font-extrabold text-white">
+                {selectedProject.title}
+              </h3>
+            </div>
+
+            <div className="p-5 rounded-2xl bg-white/5 border border-white/10 space-y-3">
+              <p className="text-zinc-300 text-sm leading-relaxed">
+                {selectedProject.longDescription || selectedProject.description}
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <span className="text-xs font-mono text-zinc-400 uppercase tracking-wider">
+                Technology Stack & Tags
+              </span>
+              <div className="flex flex-wrap gap-2">
+                {selectedProject.tags.map((t, i) => (
+                  <span
+                    key={i}
+                    className="px-3 py-1 rounded-full bg-[#0891B2]/20 border border-[#0891B2]/30 text-[#38BDF8] text-xs font-mono"
+                  >
+                    #{t}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* Action Buttons: GitHub Code Files & Live Site */}
+            <div className="pt-4 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3">
+              <div className="flex items-center gap-3 w-full sm:w-auto">
+                {selectedProject.githubUrl && selectedProject.githubUrl !== "#" && (
+                  <a
+                    href={selectedProject.githubUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 text-white font-semibold text-xs transition-all hover:scale-105"
+                  >
+                    <Code2 className="w-4 h-4 text-[#00F0FF]" />
+                    GitHub Repository
+                  </a>
+                )}
+
+                {selectedProject.demoUrl && selectedProject.demoUrl !== "#" && (
+                  <a
+                    href={selectedProject.demoUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-[#00F0FF] to-[#0284C7] hover:from-[#38BDF8] hover:to-[#0369A1] text-zinc-950 font-bold text-xs transition-all shadow-lg shadow-[#00F0FF]/25 hover:scale-105"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                    View Live Site
+                  </a>
+                )}
+              </div>
+
+              <button
+                onClick={() => setSelectedProject(null)}
+                className="w-full sm:w-auto px-5 py-2.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-zinc-400 hover:text-white text-xs font-medium transition-colors cursor-pointer"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

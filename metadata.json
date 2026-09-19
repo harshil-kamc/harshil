@@ -1,6 +1,6 @@
 {
-  "name": "Particle Text Effect",
-  "description": "Interactive canvas particle text portfolio with dynamic resume generator and real-time shared data model",
+  "name": "Harshil Kamchetty",
+  "description": "Interactive canvas particle portfolio with real-time text and image rendering, physics tuning, draggable skill badges, and Lightswind hanging ID card contact section",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

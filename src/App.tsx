@@ -6,6 +6,7 @@ import { CompetitionsSection } from "./components/CompetitionsSection";
 import { ProjectsSection } from "./components/ProjectsSection";
 import { SkillsSection } from "./components/SkillsSection";
 import { ContactSection } from "./components/ContactSection";
+import { Footer } from "./components/Footer";
 import { PlaygroundModal } from "./components/PlaygroundModal";
 import { DEFAULT_PARTICLE_IMAGES } from "./data/portfolioData";
 import { trackNewVisitor, trackParticleLabOpened } from "./utils/notificationTracker";
@@ -13,8 +14,8 @@ import { trackNewVisitor, trackParticleLabOpened } from "./utils/notificationTra
 const HERO_SEQUENCE = [
   "Hi",
   "I'm",
-  "Harshil.",
-  "Explore My Site",
+  "Harshil",
+  "a student",
   ...DEFAULT_PARTICLE_IMAGES,
 ];
 
@@ -66,7 +67,7 @@ export default function App() {
                   setCurrentWord("ABOUT");
                   break;
                 case "competitions":
-                  setCurrentWord("AWARDS");
+                  setCurrentWord("COMPETITIONS");
                   break;
                 case "projects":
                   setCurrentWord("PROJECTS");
@@ -121,7 +122,7 @@ export default function App() {
   };
 
   return (
-    <div className="relative min-h-screen bg-[#0a0a0f] text-white selection:bg-emerald-500 selection:text-zinc-950 font-sans">
+    <div className="relative min-h-screen bg-[#08090D] text-[#F5F5F5] selection:bg-[#00F0FF] selection:text-zinc-950 font-sans">
       {/* Background Interactive Particle Canvas */}
       <ParticleCanvasManager
         currentWord={currentWord}
@@ -136,7 +137,7 @@ export default function App() {
      
       {/* Override Banner if Custom Text Sequence or Image Mode Active */}
       {(customSequence || particleMode === "image") && (
-        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-40 bg-emerald-500/20 backdrop-blur-md border border-emerald-500/40 px-4 py-1.5 rounded-full text-xs font-mono text-emerald-300 flex items-center gap-3 shadow-2xl">
+        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-40 bg-[#0891B2]/25 backdrop-blur-md border border-[#00F0FF]/40 px-4 py-1.5 rounded-full text-xs font-mono text-[#38BDF8] flex items-center gap-3 shadow-2xl">
           {particleMode === "image" ? (
             <span>Image Particle Mode Active</span>
           ) : (
@@ -144,7 +145,7 @@ export default function App() {
           )}
           <button
             onClick={handleResetCustom}
-            className="underline hover:text-white font-bold"
+            className="underline hover:text-white font-bold cursor-pointer"
           >
             Reset Scroll Mode
           </button>
@@ -153,11 +154,11 @@ export default function App() {
 
       {/* Error notification if image load or CORS fails */}
       {imageErrorMessage && (
-        <div className="fixed top-32 left-1/2 -translate-x-1/2 z-40 bg-rose-500/20 backdrop-blur-md border border-rose-500/40 px-4 py-2 rounded-2xl text-xs text-rose-200 shadow-2xl flex items-center gap-3 max-w-md">
+        <div className="fixed top-32 left-1/2 -translate-x-1/2 z-40 bg-rose-950/40 backdrop-blur-md border border-rose-500/40 px-4 py-2 rounded-2xl text-xs text-rose-300 shadow-2xl flex items-center gap-3 max-w-md">
           <span>{imageErrorMessage}</span>
           <button
             onClick={() => setImageErrorMessage(null)}
-            className="font-bold underline text-white"
+            className="font-bold underline text-white cursor-pointer"
           >
             Dismiss
           </button>
@@ -173,7 +174,8 @@ export default function App() {
         <CompetitionsSection />
         <ProjectsSection />
         <SkillsSection />
-        <ContactSection onOpenPlayground={handleOpenPlayground} />
+        <ContactSection />
+        <Footer onOpenPlayground={handleOpenPlayground} />
       </main>
 
       {/* Particle Lab Playground Modal */}
