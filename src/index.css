@@ -14,6 +14,24 @@
   height: 0px;
 }
 
+/* Natural-color portrait wallpaper behind the hero particle text. */
+.ascii-hero-backdrop {
+  background-color: transparent;
+  background-image: url('/hero-portrait.png');
+  background-repeat: no-repeat;
+  background-position: right center;
+  background-size: cover;
+  transition: opacity 0.6s ease;
+}
+
+@media (max-width: 768px), (max-aspect-ratio: 1/1) {
+  .ascii-hero-backdrop {
+    background-image: url('/hero-portrait-mobile.png');
+    background-position: center center;
+    background-size: cover;
+  }
+}
+
 html, body {
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -38,5 +56,3 @@ html, body {
     width: 100%;
   }
 }
-
-

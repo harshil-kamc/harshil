@@ -130,6 +130,7 @@ export default function App() {
         autoCycle={activeSection === "hero" || !!customSequence}
         cycleInterval={260}
         mode={particleMode}
+        showBackdrop={activeSection === "hero" && currentWord !== "ABOUT" && particleMode === "text"}
         imageUrl={imageUrl}
         onImageError={(err) => setImageErrorMessage(err)}
       />
@@ -192,4 +193,3 @@ export default function App() {
     </div>
   );
 }
-

@@ -158,6 +158,8 @@ interface ParticleCanvasManagerProps {
   mode?: "text" | "image";
   imageUrl?: string | null;
   onImageError?: (msg: string) => void;
+  /** Show the ASCII portrait behind the particles (used on the hero section only). */
+  showBackdrop?: boolean;
 }
 
 export function ParticleCanvasManager({
@@ -170,6 +172,7 @@ export function ParticleCanvasManager({
   mode = "text",
   imageUrl,
   onImageError,
+  showBackdrop = false,
 }: ParticleCanvasManagerProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const animationRef = useRef<number | undefined>(undefined);
@@ -627,9 +630,8 @@ export function ParticleCanvasManager({
 
       const particles = particlesRef.current;
 
+      // Transparent clear: the wrapper div supplies the #0a0a0f base + ASCII backdrop
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = "#0a0a0f";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       let activeCount = 0;
       let settledCount = 0;
@@ -825,7 +827,13 @@ export function ParticleCanvasManager({
 
   return (
     <div className="fixed inset-0 pointer-events-auto z-0 overflow-hidden bg-[#0a0a0f]">
-      <canvas ref={canvasRef} className="block w-full h-full cursor-crosshair" />
+      {/* ASCII portrait backdrop (hero only, fades out on scroll) */}
+      <div
+        aria-hidden="true"
+        className="ascii-hero-backdrop pointer-events-none absolute inset-0"
+        style={{ opacity: showBackdrop ? 1 : 0 }}
+      />
+      <canvas ref={canvasRef} className="relative block w-full h-full cursor-crosshair" />
       {/* Discreet developer debug indicator */}
       <div className="absolute bottom-3 right-4 text-[9px] text-zinc-600/70 hover:text-zinc-400 font-mono tracking-wider pointer-events-none select-none flex items-center gap-1.5 transition-colors">
         <span className="w-1.5 h-1.5 rounded-full bg-[#FF304F]/60 inline-block"></span>
