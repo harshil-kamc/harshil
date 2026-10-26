@@ -12,9 +12,8 @@ import {
   ChevronRight,
   RotateCcw,
   Trophy,
+  Award,
   ExternalLink,
-  MapPin,
-  FolderOpen,
   ArrowUpRight,
 } from "lucide-react";
 import { Competition } from "../types/portfolio";
@@ -22,7 +21,9 @@ import {
   COMPETITIONS_LIST,
   COMPETITION_CERTIFICATES_DRIVE_URL,
   HARSHIL_BIO,
+  PROJECTS_DATA,
 } from "../data/portfolioData";
+import { fallbackToOriginal, optimizedImage } from "../utils/optimizedImage";
 
 export interface StPageFlipBookProps {
   onCompetitionSelect?: (comp: Competition) => void;
@@ -36,22 +37,39 @@ export interface StPageFlipBookHandle {
   reset: () => void;
 }
 
-// Front cover + one page per competition + season record + back cover
+// Front cover, contents, one page per competition, back cover (an even count, so the back cover closes the book)
+const CONTENTS_PAGE_INDEX = 1;
+const FIRST_ENTRY_PAGE_INDEX = 2;
 const PAGE_COUNT = COMPETITIONS_LIST.length + 3;
-const RECORD_PAGE_INDEX = COMPETITIONS_LIST.length + 1;
 
-const isPodium = (comp: Competition) => comp.isWinner || comp.awardRank === "1st";
+const isPodium = (comp: Competition) => comp.awardRank === "1st" || comp.awardRank === "Winner";
 const PODIUM_COUNT = COMPETITIONS_LIST.filter(isPodium).length;
+const HACKATHON_PROJECT_COUNT = PROJECTS_DATA.filter((p) => p.hackathonId).length;
 
-const stripEmoji = (text: string) => text.replace(/\p{Extended_Pictographic}/gu, "").replace(/\s{2,}/g, " ").trim();
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const monthOf = (comp: Competition) => MONTHS[Number(comp.startDate.slice(5, 7)) - 1];
+const yearOf = (comp: Competition) => comp.startDate.slice(0, 4);
+const FIRST_YEAR = yearOf(COMPETITIONS_LIST[0]);
+const LAST_YEAR = yearOf(COMPETITIONS_LIST[COMPETITIONS_LIST.length - 1]);
+const SPAN_LABEL = `${monthOf(COMPETITIONS_LIST[0])} ${FIRST_YEAR} – ${monthOf(
+  COMPETITIONS_LIST[COMPETITIONS_LIST.length - 1]
+)} ${LAST_YEAR}`;
 
-const shortResult = (comp: Competition) => {
-  if (comp.awardRank === "1st") return "1st Place";
-  if (comp.awardRank === "Winner") return "State Winner";
-  return "Participant";
-};
+const awardLabel = (comp: Competition) => (comp.awardRank === "1st" ? "1st Prize" : "State Winner");
 
 const pad2 = (n: number) => String(n).padStart(2, "0");
+
+const SERIF: React.CSSProperties = { fontFamily: "'Fraunces', Georgia, 'Times New Roman', serif" };
+
+// Brushed brass foil, used for every stamped element on the covers and the award seals
+const FOIL_GRADIENT =
+  "linear-gradient(105deg, #8E6B2E 0%, #E8CB86 28%, #B38A3E 46%, #F3DFA8 64%, #A57D35 82%, #D9B86E 100%)";
+const foilText: React.CSSProperties = {
+  backgroundImage: FOIL_GRADIENT,
+  WebkitBackgroundClip: "text",
+  backgroundClip: "text",
+  color: "transparent",
+};
 
 // Page size per viewport. The book is remounted when the bucket changes,
 // because react-pageflip only reads its dimensions on mount.
@@ -101,64 +119,36 @@ export function PhotoSlideshow({ images, alt }: { images: string[]; alt: string 
   );
 }
 
-/**
- * RedClothSpine - Simulates authentic textured red bookbinder cloth tape
- * pasted along the edge of cardboard books to bind all papers together.
- */
-interface RedClothSpineProps {
-  position?: "left" | "right";
-}
-
-export function RedClothSpine({ position = "left" }: RedClothSpineProps) {
-  return (
-    <div
-      className={`absolute inset-y-0 ${
-        position === "left" ? "left-0" : "right-0"
-      } w-5 z-30 pointer-events-none select-none flex flex-col justify-between overflow-hidden`}
-      style={{
-        backgroundColor: "#8B1818",
-        backgroundImage: `linear-gradient(${
-          position === "left" ? "90deg" : "270deg"
-        }, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.1) 20%, rgba(255,255,255,0.12) 50%, rgba(0,0,0,0.2) 85%, rgba(0,0,0,0.65) 100%)`,
-        boxShadow:
-          position === "left"
-            ? "2px 0 6px rgba(0,0,0,0.4), inset -1px 0 1px rgba(255,255,255,0.15)"
-            : "-2px 0 6px rgba(0,0,0,0.4), inset 1px 0 1px rgba(255,255,255,0.15)",
-      }}
-    >
-      <div className="w-full h-3 border-b border-black/35 bg-black/20" />
-      <div
-        className={`absolute inset-y-0 ${
-          position === "left" ? "left-1.5" : "right-1.5"
-        } w-[1.5px] bg-black/50 shadow-[1px_0_1px_rgba(255,255,255,0.15)]`}
-      />
-      <div
-        className={`absolute inset-y-0 ${
-          position === "left" ? "right-1.5" : "left-1.5"
-        } border-r-2 border-dashed border-amber-100/50 w-0`}
-      />
-      <div className="w-full h-3 border-t border-black/35 bg-black/20" />
-    </div>
-  );
-}
-
-// Kraft paperboard colour and texture shared by both hard covers.
+// Midnight book cloth for both hard covers, with the hinge groove on the spine side.
 // Painted as layers because page-flip rewrites each page element's inline style.
-function KraftTexture() {
+function ClothCover({ spine }: { spine: "left" | "right" }) {
+  const toSpine = spine === "left" ? "to right" : "to left";
   return (
     <>
-    <div className="absolute inset-0 pointer-events-none bg-[#D4BE9E]" />
-    <div
-      className="absolute inset-0 pointer-events-none opacity-30 mix-blend-multiply"
-      style={{
-        backgroundImage: `
-          radial-gradient(#4a3520 0.85px, transparent 0.85px),
-          radial-gradient(#2d1e10 0.65px, transparent 0.65px)
-        `,
-        backgroundSize: "9px 9px, 17px 17px",
-        backgroundPosition: "0 0, 5px 8px",
-      }}
-    />
+      <div className="absolute inset-0 pointer-events-none bg-[#14202E]" />
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundImage: `
+            repeating-linear-gradient(0deg, rgba(255,255,255,0.028) 0 1px, transparent 1px 3px),
+            repeating-linear-gradient(90deg, rgba(0,0,0,0.16) 0 1px, transparent 1px 3px),
+            radial-gradient(120% 90% at 50% 40%, rgba(255,255,255,0.06), transparent 60%),
+            radial-gradient(140% 120% at 50% 50%, transparent 55%, rgba(0,0,0,0.45))
+          `,
+        }}
+      />
+      {/* Hinge: the board bends here, so it catches a highlight and a groove */}
+      <div
+        className={`absolute inset-y-0 ${spine === "left" ? "left-0" : "right-0"} w-6 pointer-events-none`}
+        style={{
+          backgroundImage: `linear-gradient(${toSpine === "to right" ? "90deg" : "270deg"}, rgba(0,0,0,0.55) 0%, rgba(255,255,255,0.07) 45%, rgba(0,0,0,0.35) 70%, transparent 100%)`,
+        }}
+      />
+      {/* Blind-debossed frame */}
+      <div
+        className="absolute pointer-events-none border border-black/40"
+        style={{ inset: 14, boxShadow: "0 1px 0 rgba(255,255,255,0.06), inset 0 1px 0 rgba(255,255,255,0.05)", [spine === "left" ? "left" : "right"]: 30 } as React.CSSProperties}
+      />
     </>
   );
 }
@@ -168,30 +158,29 @@ interface PageProps {
   density?: "hard" | "soft";
   isLeftPage?: boolean;
   className?: string;
-  style?: React.CSSProperties;
   children: React.ReactNode;
 }
 
 const BookPage = forwardRef<HTMLDivElement, PageProps>(
-  ({ density = "soft", isLeftPage = false, className = "", style = {}, children }, ref) => {
+  ({ density = "soft", isLeftPage = false, className = "", children }, ref) => {
     return (
       <div
         ref={ref}
         data-density={density}
-        className="relative w-full h-full overflow-hidden select-none bg-[#FAFAF7] text-zinc-900"
-        style={{ boxSizing: "border-box", borderRadius: 0, ...style }}
+        className="relative w-full h-full overflow-hidden select-none bg-[#F7F4EC] text-[#1C1B19]"
+        style={{ boxSizing: "border-box", borderRadius: 0 }}
       >
-        {/* Spine crease shadow for realistic book depth */}
+        {/* Gutter shadow where the paper curves into the binding */}
         {density === "soft" && (
           <div
-            className={`absolute inset-y-0 w-10 pointer-events-none z-20 ${
+            className={`absolute inset-y-0 w-12 pointer-events-none z-20 ${
               isLeftPage
-                ? "right-0 bg-gradient-to-l from-black/20 via-black/[0.06] to-transparent"
-                : "left-0 bg-gradient-to-r from-black/20 via-black/[0.06] to-transparent"
+                ? "right-0 bg-gradient-to-l from-black/[0.16] via-black/[0.04] to-transparent"
+                : "left-0 bg-gradient-to-r from-black/[0.16] via-black/[0.04] to-transparent"
             }`}
           />
         )}
-        <div className="absolute inset-0 pointer-events-none z-10" style={{ boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.08)" }} />
+        <div className="absolute inset-0 pointer-events-none z-10" style={{ boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.07)" }} />
         {/* page-flip forces display:block on the page element, so layout lives on this inner box */}
         <div className={`absolute inset-0 flex flex-col ${className}`}>{children}</div>
       </div>
@@ -201,7 +190,17 @@ const BookPage = forwardRef<HTMLDivElement, PageProps>(
 
 BookPage.displayName = "BookPage";
 
-// Page number on the outer edge of each page
+// Running head at the top of every paper page
+function RunningHead({ left, right }: { left: React.ReactNode; right: React.ReactNode }) {
+  return (
+    <div className="flex items-baseline justify-between gap-3 pb-2 border-b border-[#1C1B19]/80 shrink-0">
+      <span className="text-[10.5px] font-mono uppercase tracking-[0.16em] text-[#1C1B19] whitespace-nowrap shrink-0">{left}</span>
+      <span className="text-[10.5px] font-mono uppercase tracking-[0.12em] text-[#6B665C] text-right truncate">{right}</span>
+    </div>
+  );
+}
+
+// Folio (page number) on the outer edge of each page
 function PageFooter({
   pageIndex,
   isLeftPage,
@@ -211,88 +210,209 @@ function PageFooter({
   isLeftPage: boolean;
   children?: React.ReactNode;
 }) {
-  const number = <span className="text-[11px] font-mono text-zinc-400 tabular-nums">p. {pad2(pageIndex + 1)}</span>;
+  const folio = (
+    <span className="text-[12px] text-[#8A8478] tabular-nums italic" style={SERIF}>
+      {pageIndex}
+    </span>
+  );
   return (
-    <div className="mt-auto shrink-0 pt-3 border-t border-zinc-300 flex items-center justify-between gap-3">
-      {isLeftPage ? number : children ?? <span />}
-      {isLeftPage ? children ?? <span /> : number}
+    <div className="mt-auto shrink-0 pt-3 border-t border-[#1C1B19]/15 flex items-center justify-between gap-3">
+      {isLeftPage ? folio : children ?? <span />}
+      {isLeftPage ? children ?? <span /> : folio}
+    </div>
+  );
+}
+
+// Brass award seal pressed onto the page for a 1st prize or state win
+function AwardSeal({ comp, compact }: { comp: Competition; compact: boolean }) {
+  const size = compact ? 72 : 88;
+  const Icon = comp.awardRank === "1st" ? Trophy : Award;
+  return (
+    <div
+      data-round
+      className="absolute z-30 rounded-full flex items-center justify-center -rotate-[8deg]"
+      style={{
+        width: size,
+        height: size,
+        right: compact ? 10 : 14,
+        // Mostly below the plate, beside the title, so it never covers plate text
+        bottom: -size * 0.72,
+        backgroundImage: FOIL_GRADIENT,
+        boxShadow: "0 6px 16px rgba(60,40,10,0.35), inset 0 1px 1px rgba(255,255,255,0.6), inset 0 -2px 3px rgba(80,55,15,0.45)",
+      }}
+      aria-label={awardLabel(comp)}
+    >
+      <div
+        data-round
+        className="absolute rounded-full border border-dashed border-[#5A4115]/60"
+        style={{ inset: compact ? 5 : 6 }}
+      />
+      <div className="relative flex flex-col items-center text-[#3A2A0C] leading-none">
+        <Icon className={compact ? "w-4 h-4" : "w-5 h-5"} strokeWidth={2} />
+        <span className={`${compact ? "mt-1 text-[9px]" : "mt-1.5 text-[10.5px]"} font-black uppercase tracking-[0.1em] text-center`}>
+          {comp.awardRank === "1st" ? "1st" : "State"}
+        </span>
+        <span className={`${compact ? "text-[9px]" : "text-[10.5px]"} font-black uppercase tracking-[0.1em]`}>
+          {comp.awardRank === "1st" ? "Prize" : "Winner"}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+// Plate shown on pages that have no event photo yet: real event facts set as type, not a stock image
+function FactPlate({ comp, compact }: { comp: Competition; compact: boolean }) {
+  return (
+    <div className="absolute inset-0 bg-[#16181D] text-[#EDE7DA]">
+      <div
+        className="absolute inset-0 opacity-100"
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(255,255,255,0.045) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.045) 1px, transparent 1px)",
+          backgroundSize: "22px 22px",
+          backgroundPosition: "-1px -1px",
+        }}
+      />
+      <div className={`relative h-full flex ${compact ? "p-3.5" : "p-5"}`}>
+        <div className="flex flex-col justify-end">
+          <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-[#00F0FF]/80">{comp.type}</span>
+          <span className={`${compact ? "text-[46px]" : "text-[64px]"} leading-[0.85] font-light tracking-[-0.03em] mt-2`} style={SERIF}>
+            {monthOf(comp)}
+          </span>
+          <span className="mt-1.5 text-[12px] font-mono tracking-[0.2em] text-[#EDE7DA]/60">{yearOf(comp)}</span>
+        </div>
+        <dl className={`ml-auto self-start text-right ${compact ? "max-w-[55%] space-y-2" : "max-w-[52%] space-y-3"}`}>
+          {comp.duration && !compact && (
+            <div>
+              <dt className="text-[9.5px] font-mono uppercase tracking-[0.18em] text-[#EDE7DA]/45">Format</dt>
+              <dd className={`${compact ? "text-[12px]" : "text-[13px]"} mt-0.5 leading-snug`}>{comp.duration}</dd>
+            </div>
+          )}
+          {comp.venue && (
+            <div>
+              <dt className="text-[9.5px] font-mono uppercase tracking-[0.18em] text-[#EDE7DA]/45">Venue</dt>
+              <dd className={`${compact ? "text-[12px]" : "text-[13px]"} mt-0.5 leading-snug line-clamp-2`}>{comp.venue}</dd>
+            </div>
+          )}
+        </dl>
+      </div>
+    </div>
+  );
+}
+
+// Plate for pages with a certificate but no event photo: the certificate, mounted on the dark plate
+function CertificatePlate({ comp, compact }: { comp: Competition; compact: boolean }) {
+  const src = comp.certificateImage!;
+  return (
+    <div className="absolute inset-0 bg-[#16181D]">
+      <div
+        className="absolute inset-0"
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px)",
+          backgroundSize: "22px 22px",
+        }}
+      />
+      <div className={`absolute inset-0 flex items-center justify-center ${compact ? "p-3 pb-6" : "p-4 pb-7"}`}>
+        <img
+          src={optimizedImage(src, 900)}
+          onError={fallbackToOriginal(src)}
+          alt={`${comp.title} certificate`}
+          referrerPolicy="no-referrer"
+          loading="lazy"
+          className="max-w-full max-h-full object-contain shadow-[0_10px_28px_rgba(0,0,0,0.6)]"
+        />
+      </div>
+      <span className="absolute left-3 bottom-2 text-[9.5px] font-mono uppercase tracking-[0.18em] text-[#EDE7DA]/60">
+        Certificate
+      </span>
     </div>
   );
 }
 
 interface CompetitionPageProps {
   comp: Competition;
+  entryNumber: number;
   pageIndex: number;
   compact: boolean;
   onOpen?: (comp: Competition) => void;
 }
 
 const CompetitionPage = forwardRef<HTMLDivElement, CompetitionPageProps>(
-  ({ comp, pageIndex, compact, onOpen }, ref) => {
+  ({ comp, entryNumber, pageIndex, compact, onOpen }, ref) => {
     const isLeftPage = pageIndex % 2 === 1;
     const photos = comp.images && comp.images.length > 1 ? comp.images : null;
     const photo = comp.coverImage || comp.images?.[0];
+    const showsFactPlate = !photo && !comp.certificateImage;
     const winner = isPodium(comp);
 
     const facts: [string, string][] = [
-      ["Result", winner && !/1st|winner/i.test(comp.result) ? shortResult(comp) : stripEmoji(comp.result)],
+      ["Result", comp.result],
       comp.projectName ? ["Project", comp.projectName] : ["Focus", comp.projectOrFocus || comp.type],
       ...(comp.projectRole ? [["Role", comp.projectRole] as [string, string]] : []),
       ...(comp.teamName && !comp.teamName.startsWith("Individual") ? [["Team", comp.teamName] as [string, string]] : []),
-      ...(comp.duration ? [["Format", comp.duration] as [string, string]] : []),
+      // The full-size fact plate already shows the format
+      ...((!showsFactPlate || compact) && comp.duration ? [["Format", comp.duration] as [string, string]] : []),
     ];
+    // Lines of summary that fit under the facts: full pages fit 3 lines with 3 facts, 2 with 4, none with 5+
+    const descriptionLines = compact ? (facts.length <= 4 ? 2 : 0) : facts.length <= 3 ? 3 : facts.length === 4 ? 2 : 0;
 
     return (
-      <BookPage ref={ref} isLeftPage={isLeftPage} className={compact ? "p-5" : "p-7"}>
-        {/* Running head */}
-        <div className="flex items-baseline justify-between gap-3 pb-2.5 border-b-2 border-zinc-950">
-          <span className="text-[11px] font-mono font-bold uppercase tracking-[0.12em] text-zinc-900">{comp.type}</span>
-          <span className="text-[11px] font-mono text-zinc-500 text-right truncate">{comp.date}</span>
-        </div>
+      <BookPage ref={ref} isLeftPage={isLeftPage} className={compact ? "px-5 pt-5 pb-4" : "px-8 pt-7 pb-6"}>
+        <RunningHead
+          left={`No. ${pad2(entryNumber)} / ${pad2(COMPETITIONS_LIST.length)}`}
+          right={comp.date}
+        />
 
-        {/* Photo plate with ink stamp for podium finishes */}
-        <div className={`relative w-full ${compact ? "mt-3.5" : "mt-5"} aspect-[2/1] shrink-0 overflow-hidden bg-zinc-900 border-2 border-zinc-950`}>
-          {photos ? (
-            <PhotoSlideshow images={photos} alt={comp.title} />
-          ) : photo ? (
-            <img src={photo} alt={comp.title} referrerPolicy="no-referrer" loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
-          ) : null}
-        </div>
-        {winner && (
-          <div className="relative h-0 z-30">
-            <span
-              className="absolute right-3 -top-7 px-2.5 py-1 border-[3px] border-double border-[#B4231F] text-[#B4231F] bg-[#FAFAF7]/90 text-[12px] font-black uppercase tracking-[0.14em] -rotate-6 shadow-[0_2px_6px_rgba(0,0,0,0.18)]"
-              aria-label={shortResult(comp)}
-            >
-              {shortResult(comp)}
-            </span>
+        <div className={`relative w-full ${compact ? "mt-3.5 aspect-[2/1]" : "mt-5 aspect-[16/9]"} shrink-0`}>
+          <div className="absolute inset-0 overflow-hidden bg-[#16181D]">
+            {photos ? (
+              <PhotoSlideshow images={photos} alt={comp.title} />
+            ) : photo ? (
+              <img src={photo} alt={comp.title} referrerPolicy="no-referrer" loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
+            ) : comp.certificateImage ? (
+              <CertificatePlate comp={comp} compact={compact} />
+            ) : (
+              <FactPlate comp={comp} compact={compact} />
+            )}
           </div>
-        )}
+          {winner && <AwardSeal comp={comp} compact={compact} />}
+        </div>
 
-        {/* Title block */}
-        <div className={compact ? "mt-3.5" : "mt-5"}>
-          <h3 className={`${compact ? "text-lg" : "text-[22px]"} font-black text-zinc-950 tracking-tight leading-[1.15] text-balance`}>
+        <div className={`${compact ? "mt-3.5" : "mt-5"} shrink-0 ${winner ? (compact ? "pr-20" : "pr-24") : ""}`}>
+          <h3
+            className={`${compact ? "text-[19px]" : "text-[25px]"} font-semibold text-[#141311] tracking-[-0.015em] leading-[1.12] text-balance`}
+            style={SERIF}
+          >
             {comp.title}
           </h3>
-          <p className="mt-1.5 text-[13px] text-[#0E7490] font-semibold flex items-start gap-1.5">
-            <MapPin className="w-3.5 h-3.5 mt-[3px] shrink-0" />
-            <span className="line-clamp-1">{comp.venue || comp.organizer}</span>
-          </p>
+          <p className="mt-1.5 text-[12.5px] text-[#6B665C] line-clamp-1">{comp.organizer}</p>
         </div>
 
-        {/* Facts ledger */}
-        <dl className={`${compact ? "mt-3" : "mt-4"} text-[13px] shrink-0`}>
+        <dl className={`${compact ? "mt-2.5" : "mt-4"} text-[13px] shrink-0`}>
           {facts.map(([label, value]) => (
-            <div key={label} className="flex items-baseline justify-between gap-4 py-1.5 border-b border-dotted border-zinc-300">
-              <dt className="text-[11px] font-mono uppercase tracking-wider text-zinc-500 shrink-0">{label}</dt>
-              <dd className="font-semibold text-zinc-900 text-right truncate">{value}</dd>
+            <div key={label} className={`flex items-baseline justify-between gap-4 ${compact ? "py-1" : "py-[7px]"} border-b border-[#1C1B19]/12`}>
+              <dt className="text-[10px] font-mono uppercase tracking-[0.14em] text-[#8A8478] shrink-0">{label}</dt>
+              <dd
+                className={`text-right truncate ${
+                  label === "Result" && winner ? "font-semibold text-[#8A5A12]" : "font-medium text-[#1C1B19]"
+                }`}
+              >
+                {value}
+              </dd>
             </div>
           ))}
         </dl>
 
-        <div className="mt-3 flex-1 min-h-0 overflow-hidden [mask-image:linear-gradient(to_bottom,black_70%,transparent)]">
-          <p className="text-[13px] leading-relaxed text-zinc-700 line-clamp-3">{comp.description}</p>
-        </div>
+        {/* Fit the summary to the room the facts leave, rather than slicing a line in half;
+            the full text is one click away in Details */}
+        {descriptionLines > 0 && (
+          <div className={`${compact ? "mt-2.5" : "mt-3.5"} flex-1 min-h-0 overflow-hidden`}>
+            <p className={`text-[13px] leading-[1.6] text-[#4A463F] ${descriptionLines === 2 ? "line-clamp-2" : "line-clamp-3"}`}>
+              {comp.description}
+            </p>
+          </div>
+        )}
 
         <PageFooter pageIndex={pageIndex} isLeftPage={isLeftPage}>
           <button
@@ -301,10 +421,10 @@ const CompetitionPage = forwardRef<HTMLDivElement, CompetitionPageProps>(
               e.stopPropagation();
               onOpen?.(comp);
             }}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-zinc-950 text-white text-[13px] font-semibold transition-colors hover:bg-[#00F0FF] hover:text-zinc-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0E7490] cursor-pointer"
+            className="group inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-[#1C1B19] border-b border-[#1C1B19]/40 pb-0.5 transition-colors hover:text-[#0E7490] hover:border-[#0E7490] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0E7490] cursor-pointer"
           >
-            Full report
-            <ArrowUpRight className="w-3.5 h-3.5" />
+            Details{comp.certificateUrl && comp.certificateUrl !== COMPETITION_CERTIFICATES_DRIVE_URL ? " & certificate" : ""}
+            <ArrowUpRight className="w-3.5 h-3.5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
           </button>
         </PageFooter>
       </BookPage>
@@ -325,6 +445,7 @@ export const StPageFlipBook = forwardRef<StPageFlipBookHandle, StPageFlipBookPro
       getBookSize(typeof window !== "undefined" ? window.innerWidth : 1280)
     );
     const compact = bookSize.width < 440;
+    const isLandscape = orientation === "landscape";
 
     // Remount the book with new dimensions only when the size bucket changes
     useEffect(() => {
@@ -395,33 +516,37 @@ export const StPageFlipBook = forwardRef<StPageFlipBookHandle, StPageFlipBookPro
 
     const isFirst = currentPage === 0;
     const isLast = currentPage >= PAGE_COUNT - 1;
+    const isClosed = isFirst || isLast;
 
     // A closed book sits on one half of the spread; slide it to the centre
-    const bookShift =
-      orientation === "landscape" ? (isFirst ? -bookSize.width / 2 : isLast ? bookSize.width / 2 : 0) : 0;
+    const bookShift = isLandscape ? (isFirst ? -bookSize.width / 2 : isLast ? bookSize.width / 2 : 0) : 0;
+    // Shadow and glow follow what is actually on screen: one page in portrait or when closed, two when open.
+    // Sizing them to a spread on a phone made them wider than the screen and zoomed the page out.
+    const visibleWidth = isLandscape && !isClosed ? bookSize.width * 2 : bookSize.width;
+
+    const pageNames = [
+      "Cover",
+      "Contents",
+      ...COMPETITIONS_LIST.map((comp) => comp.title),
+      "Certificates",
+    ];
 
     // Spread stops for the progress rail: cover, each two-page spread, back cover
     const stops: { index: number; label: string }[] = [{ index: 0, label: "Cover" }];
-    if (orientation === "landscape") {
-      for (let i = 1; i < PAGE_COUNT - 1; i += 2) {
-        const names = [COMPETITIONS_LIST[i - 1]?.title, COMPETITIONS_LIST[i]?.title ?? "Season record"].filter(Boolean);
-        stops.push({ index: i, label: names.join(" / ") });
-      }
-    } else {
-      for (let i = 1; i < PAGE_COUNT - 1; i++) {
-        stops.push({ index: i, label: COMPETITIONS_LIST[i - 1]?.title ?? "Season record" });
-      }
+    for (let i = 1; i < PAGE_COUNT - 1; i += isLandscape ? 2 : 1) {
+      const names = isLandscape ? [pageNames[i], pageNames[i + 1]] : [pageNames[i]];
+      stops.push({ index: i, label: names.filter((n) => n && n !== "Certificates").join(" / ") });
     }
-    stops.push({ index: PAGE_COUNT - 1, label: "Certificate archive" });
+    stops.push({ index: PAGE_COUNT - 1, label: "Back cover: certificates" });
     const activeStop = stops.reduce((active, stop, i) => (currentPage >= stop.index ? i : active), 0);
 
     const pageLabel = isFirst
       ? "Cover"
       : isLast
       ? "Back cover"
-      : orientation === "landscape"
-      ? `Pages ${currentPage + 1}–${Math.min(currentPage + 2, PAGE_COUNT - 1)}`
-      : `Page ${currentPage + 1}`;
+      : isLandscape
+      ? `Pages ${currentPage}–${Math.min(currentPage + 1, PAGE_COUNT - 2)} of ${PAGE_COUNT - 2}`
+      : `Page ${currentPage} of ${PAGE_COUNT - 2}`;
 
     const FlipBookComponent = HTMLFlipBook as any;
 
@@ -432,7 +557,7 @@ export const StPageFlipBook = forwardRef<StPageFlipBookHandle, StPageFlipBookPro
           dangerouslySetInnerHTML={{
             __html: `
               .stpageflip-book-shadow,
-              .stpageflip-book-shadow div,
+              .stpageflip-book-shadow div:not([data-round]),
               .stpageflip-book-shadow canvas {
                 border-radius: 0px !important;
               }
@@ -444,19 +569,12 @@ export const StPageFlipBook = forwardRef<StPageFlipBookHandle, StPageFlipBookPro
         <div className="relative flex items-center justify-center w-full mx-auto" style={{ minHeight: bookSize.height + 24 }}>
           {/* Soft floor shadow and cyan underglow */}
           <div
-            className="absolute left-1/2 -translate-x-1/2 rounded-[50%] bg-black/70 blur-2xl pointer-events-none transition-all duration-700"
-            style={{
-              bottom: -6,
-              height: 40,
-              width: isFirst || isLast ? bookSize.width * 0.9 : bookSize.width * 1.8,
-            }}
+            className="absolute left-1/2 -translate-x-1/2 rounded-[50%] bg-black/70 blur-2xl pointer-events-none transition-all duration-700 max-w-full"
+            style={{ bottom: -6, height: 40, width: visibleWidth * 0.92 }}
           />
           <div
-            className="absolute -bottom-10 left-1/2 -translate-x-1/2 h-16 bg-[#00F0FF]/15 rounded-full blur-3xl pointer-events-none transition-all duration-700"
-            style={{
-              width: isFirst || isLast ? bookSize.width : bookSize.width * 1.7,
-              opacity: isFirst || isLast ? 0.35 : 0.8,
-            }}
+            className="absolute -bottom-10 left-1/2 -translate-x-1/2 h-16 bg-[#00F0FF]/15 rounded-full blur-3xl pointer-events-none transition-all duration-700 max-w-full"
+            style={{ width: visibleWidth * 0.85, opacity: isClosed ? 0.35 : 0.8 }}
           />
 
           <div
@@ -479,7 +597,7 @@ export const StPageFlipBook = forwardRef<StPageFlipBookHandle, StPageFlipBookPro
               minHeight={450}
               maxHeight={680}
               drawShadow={true}
-              maxShadowOpacity={0.6}
+              maxShadowOpacity={0.5}
               showCover={true}
               flippingTime={850}
               usePortrait={true}
@@ -496,151 +614,180 @@ export const StPageFlipBook = forwardRef<StPageFlipBookHandle, StPageFlipBookPro
               onChangeOrientation={handleChangeOrientation}
               onInit={handleInit}
             >
-              {/* FRONT COVER: kraft cardboard with red cloth binding */}
-              <BookPage
-                density="hard"
-                className={`border-2 border-stone-900 text-stone-950 ${compact ? "pl-12 pr-6 py-6" : "pl-16 pr-9 py-9"}`}
-              >
-                <RedClothSpine position="left" />
-                <KraftTexture />
+              {/* FRONT COVER: midnight cloth, brass foil */}
+              <BookPage density="hard" className={compact ? "pl-11 pr-7 py-7" : "pl-14 pr-10 py-10"}>
+                <ClothCover spine="left" />
 
-                <div className="relative z-10 flex items-baseline justify-between pb-3 border-b-2 border-stone-900">
-                  <span className="text-[11px] font-mono font-bold uppercase tracking-[0.16em]">Competition record</span>
-                  <span className="text-[11px] font-mono font-bold text-stone-700 tabular-nums">2025–26</span>
+                <div className="relative z-10 flex items-baseline justify-between">
+                  <span className="text-[10px] font-mono font-semibold uppercase tracking-[0.28em]" style={foilText}>
+                    Competition Record
+                  </span>
+                  <span className="text-[10px] font-mono font-semibold tracking-[0.2em] tabular-nums" style={foilText}>
+                    {FIRST_YEAR}–{LAST_YEAR.slice(2)}
+                  </span>
                 </div>
 
                 <div className="relative z-10 flex-1 flex flex-col items-center justify-center text-center">
-                  <div className={`${compact ? "w-16 h-16" : "w-20 h-20"} bg-stone-950 flex items-center justify-center shadow-[0_6px_14px_rgba(0,0,0,0.35)]`}>
-                    <Trophy className={`${compact ? "w-8 h-8" : "w-10 h-10"} text-[#00F0FF]`} strokeWidth={1.75} />
+                  {/* Monogram medallion */}
+                  <div
+                    className={`${compact ? "w-[68px] h-[68px]" : "w-[84px] h-[84px]"} p-[2px]`}
+                    style={{ backgroundImage: FOIL_GRADIENT }}
+                  >
+                    <div className="w-full h-full bg-[#14202E] flex items-center justify-center">
+                      <div className="w-[86%] h-[86%] border border-[#C9A55E]/50 flex items-center justify-center">
+                        <span className={`${compact ? "text-[24px]" : "text-[30px]"} font-medium tracking-[0.04em]`} style={{ ...SERIF, ...foilText }}>
+                          HK
+                        </span>
+                      </div>
+                    </div>
                   </div>
 
-                  <h2 className={`${compact ? "mt-6 text-[34px]" : "mt-8 text-[44px]"} font-black uppercase leading-[0.92] tracking-[-0.03em] text-stone-950`}>
-                    Hackathon
-                    <span className="block">Chronicles</span>
-                  </h2>
-                  <p className="mt-3 text-[13px] font-medium text-stone-800 max-w-[34ch] text-balance">
-                    Sprint archives and podium finishes, December 2025 to May 2026.
+                  <p
+                    className={`${compact ? "mt-6 text-[34px]" : "mt-8 text-[46px]"} font-medium leading-[0.98] tracking-[-0.02em]`}
+                    style={{ ...SERIF, ...foilText }}
+                  >
+                    Competitions
+                    <span className="block italic font-light">&amp; Hackathons</span>
                   </p>
 
-                  <div className={`${compact ? "mt-6" : "mt-8"} w-full max-w-[280px] border border-stone-900/50 bg-stone-900/[0.07] px-4 py-2.5`}>
-                    <div className="text-[13px] font-black tracking-[0.08em]">{HARSHIL_BIO.fullName}</div>
-                    <div className="text-[11px] font-mono text-stone-700 mt-0.5">CSIT · MVSR Engineering College</div>
-                  </div>
+                  <div className={`${compact ? "mt-4 w-14" : "mt-6 w-20"} h-px`} style={{ backgroundImage: FOIL_GRADIENT }} />
+
+                  <p className={`${compact ? "mt-4" : "mt-5"} text-[12.5px] leading-relaxed text-[#C9C2B2]/80 max-w-[30ch] text-balance`}>
+                    {COMPETITIONS_LIST.length} events, {SPAN_LABEL}
+                  </p>
                 </div>
 
-                <div className="relative z-10 pt-4 border-t-2 border-stone-900 space-y-3">
-                  <div className="grid grid-cols-3 text-center divide-x divide-stone-900/30 border border-stone-900/30 bg-stone-900/[0.06]">
+                <div className="relative z-10 space-y-5">
+                  <div className="grid grid-cols-3 text-center">
                     {[
                       [String(COMPETITIONS_LIST.length), "Events"],
                       [String(PODIUM_COUNT), "Podiums"],
-                      ["12L+", "Largest field"],
-                    ].map(([value, label]) => (
-                      <div key={label} className="py-2">
-                        <div className={`${compact ? "text-lg" : "text-xl"} font-black tabular-nums leading-none`}>{value}</div>
-                        <div className="mt-1 text-[10px] font-mono font-bold uppercase tracking-wider text-stone-700">{label}</div>
+                      [String(HACKATHON_PROJECT_COUNT), "Projects built"],
+                    ].map(([value, label], i) => (
+                      <div key={label} className={i > 0 ? "border-l border-[#C9A55E]/25" : ""}>
+                        <div className={`${compact ? "text-[24px]" : "text-[30px]"} font-medium leading-none tabular-nums`} style={{ ...SERIF, ...foilText }}>
+                          {value}
+                        </div>
+                        <div className="mt-1.5 text-[9.5px] font-mono uppercase tracking-[0.16em] text-[#C9C2B2]/60">{label}</div>
                       </div>
                     ))}
                   </div>
-                  <div className="flex items-center justify-center gap-1.5 py-2 bg-stone-950 text-[#F5EBDD] text-[12px] font-semibold">
-                    Turn the cover to open
-                    <ChevronRight className="w-3.5 h-3.5" />
+                  <div className="flex items-end justify-between gap-3 pt-4 border-t border-[#C9A55E]/25">
+                    <div>
+                      <div className="text-[12px] font-semibold uppercase tracking-[0.2em]" style={foilText}>
+                        {HARSHIL_BIO.fullName}
+                      </div>
+                      <div className="mt-1 text-[10.5px] text-[#C9C2B2]/60">B.E. CSIT · MVSR Engineering College</div>
+                    </div>
+                    <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[#C9C2B2]/70 shrink-0">
+                      Open
+                      <ChevronRight className="w-3.5 h-3.5" />
+                    </span>
                   </div>
                 </div>
               </BookPage>
 
-              {/* ONE PAGE PER COMPETITION, in chronological order */}
-              {COMPETITIONS_LIST.map((comp, i) => (
-                <CompetitionPage
-                  key={comp.id}
-                  comp={comp}
-                  pageIndex={i + 1}
-                  compact={compact}
-                  onOpen={onCompetitionSelect}
-                />
-              ))}
+              {/* CONTENTS: every entry at a glance, each row jumps to its page */}
+              <BookPage isLeftPage className={compact ? "px-5 pt-5 pb-4" : "px-8 pt-7 pb-6"}>
+                <RunningHead left="Contents" right={SPAN_LABEL} />
 
-              {/* SEASON RECORD: every entry at a glance, each row jumps to its page */}
-              <BookPage isLeftPage={RECORD_PAGE_INDEX % 2 === 1} className={compact ? "p-5" : "p-7"}>
-                <div className="flex items-baseline justify-between gap-3 pb-2.5 border-b-2 border-zinc-950">
-                  <span className="text-[11px] font-mono font-bold uppercase tracking-[0.12em] text-zinc-900">Season record</span>
-                  <span className="text-[11px] font-mono text-zinc-500">Dec 2025 – May 2026</span>
-                </div>
-
-                <h3 className={`${compact ? "mt-4 text-lg" : "mt-5 text-[22px]"} font-black tracking-tight leading-tight text-zinc-950`}>
-                  {COMPETITIONS_LIST.length} events, {PODIUM_COUNT} podium finishes
+                <h3 className={`${compact ? "mt-4 text-[22px]" : "mt-6 text-[30px]"} font-medium tracking-[-0.02em] leading-[1.05] text-[#141311]`} style={SERIF}>
+                  {COMPETITIONS_LIST.length} events,{" "}
+                  <span className="italic font-light">{PODIUM_COUNT} on the podium</span>
                 </h3>
 
-                <ol className={`${compact ? "mt-3" : "mt-4"} text-[13px]`}>
+                <ol className={`${compact ? "mt-3" : "mt-5"} flex-1 min-h-0`}>
                   {COMPETITIONS_LIST.map((comp, i) => (
                     <li key={comp.id}>
                       <button
                         type="button"
                         onClick={(e) => {
                           e.stopPropagation();
-                          goToPage(i + 1);
+                          goToPage(FIRST_ENTRY_PAGE_INDEX + i);
                         }}
-                        className={`group w-full flex items-center gap-3 ${compact ? "py-1" : "py-1.5"} border-b border-dotted border-zinc-300 text-left cursor-pointer`}
+                        className={`group w-full flex items-baseline gap-3 ${compact ? "py-[5px]" : "py-[7px]"} border-b border-[#1C1B19]/10 text-left cursor-pointer`}
                       >
-                        <span className="w-5 text-[11px] font-mono text-zinc-400 tabular-nums shrink-0">{pad2(i + 1)}</span>
-                        <span className="flex-1 min-w-0 truncate font-medium text-zinc-800 group-hover:text-[#0E7490] transition-colors">
+                        <span className="w-9 shrink-0 text-[10px] font-mono uppercase tracking-[0.08em] text-[#8A8478]">{monthOf(comp)} {yearOf(comp).slice(2)}</span>
+                        <span className="flex-1 min-w-0 truncate text-[13px] font-medium text-[#1C1B19] group-hover:text-[#0E7490] transition-colors">
                           {comp.title}
                         </span>
-                        {isPodium(comp) ? (
-                          <span className="inline-flex items-center gap-1 text-[12px] font-bold text-[#B4231F] shrink-0">
-                            <Trophy className="w-3 h-3" />
-                            {shortResult(comp)}
-                          </span>
-                        ) : (
-                          <span className="text-[12px] text-zinc-400 shrink-0">Participant</span>
-                        )}
+                        {isPodium(comp) &&
+                          (compact ? (
+                            <Trophy className="w-3.5 h-3.5 shrink-0 self-center text-[#8A5A12]" aria-label={awardLabel(comp)} />
+                          ) : (
+                            <span className="shrink-0 text-[10px] font-mono font-semibold uppercase tracking-[0.08em] text-[#8A5A12]">
+                              {awardLabel(comp)}
+                            </span>
+                          ))}
+                        <span className="w-5 shrink-0 text-right text-[12px] italic text-[#8A8478] tabular-nums" style={SERIF}>
+                          {FIRST_ENTRY_PAGE_INDEX + i}
+                        </span>
                       </button>
                     </li>
                   ))}
                 </ol>
 
-                <PageFooter pageIndex={RECORD_PAGE_INDEX} isLeftPage={RECORD_PAGE_INDEX % 2 === 1}>
-                  <span className="text-[12px] text-zinc-500">Certificates on the back cover</span>
+                <PageFooter pageIndex={CONTENTS_PAGE_INDEX} isLeftPage>
+                  <span className="text-[11.5px] text-[#8A8478]">Tap an entry to turn to it</span>
                 </PageFooter>
               </BookPage>
 
-              {/* BACK COVER: certificate archive */}
-              <BookPage
-                density="hard"
-                className={`border-2 border-stone-900 text-stone-950 ${compact ? "pr-12 pl-6 py-6" : "pr-16 pl-9 py-9"}`}
-              >
-                <RedClothSpine position="right" />
-                <KraftTexture />
+              {/* ONE PAGE PER COMPETITION, oldest first */}
+              {COMPETITIONS_LIST.map((comp, i) => (
+                <CompetitionPage
+                  key={comp.id}
+                  comp={comp}
+                  entryNumber={i + 1}
+                  pageIndex={FIRST_ENTRY_PAGE_INDEX + i}
+                  compact={compact}
+                  onOpen={onCompetitionSelect}
+                />
+              ))}
 
-                <div className="relative z-10 flex items-baseline justify-between pb-3 border-b-2 border-stone-900">
-                  <span className="text-[11px] font-mono font-bold uppercase tracking-[0.16em]">Certificate archive</span>
+              {/* BACK COVER: certificate archive */}
+              <BookPage density="hard" className={compact ? "pr-11 pl-7 py-7" : "pr-14 pl-10 py-10"}>
+                <ClothCover spine="right" />
+
+                <div className="relative z-10 flex items-baseline justify-between">
+                  <span className="text-[10px] font-mono font-semibold uppercase tracking-[0.28em]" style={foilText}>
+                    Certificates
+                  </span>
+                  <span className="text-[10px] font-mono font-semibold tracking-[0.2em]" style={foilText}>
+                    HK
+                  </span>
                 </div>
 
                 <div className="relative z-10 flex-1 flex flex-col items-center justify-center text-center">
-                  <div className={`${compact ? "w-16 h-16" : "w-20 h-20"} bg-stone-950 flex items-center justify-center shadow-[0_6px_14px_rgba(0,0,0,0.35)]`}>
-                    <FolderOpen className={`${compact ? "w-8 h-8" : "w-10 h-10"} text-[#00F0FF]`} strokeWidth={1.75} />
-                  </div>
-                  <h3 className={`${compact ? "mt-6 text-2xl" : "mt-8 text-[28px]"} font-black uppercase tracking-[-0.02em] leading-none`}>
-                    Every certificate
+                  <h3
+                    className={`${compact ? "text-[30px]" : "text-[38px]"} font-medium leading-[1.02] tracking-[-0.02em]`}
+                    style={{ ...SERIF, ...foilText }}
+                  >
+                    Every certificate,
+                    <span className="block italic font-light">in one place</span>
                   </h3>
-                  <p className="mt-3 text-[13px] font-medium text-stone-800 max-w-[32ch] leading-relaxed text-balance">
-                    Participation and winner certificates for each event, kept in one Google Drive folder.
+                  <div className={`${compact ? "mt-4 w-14" : "mt-6 w-20"} h-px`} style={{ backgroundImage: FOIL_GRADIENT }} />
+                  <p className="mt-5 text-[12.5px] leading-relaxed text-[#C9C2B2]/80 max-w-[30ch] text-balance">
+                    Participation and award certificates for all {COMPETITIONS_LIST.length} events, kept in a Google Drive folder.
                   </p>
                   <a
                     href={COMPETITION_CERTIFICATES_DRIVE_URL}
                     target="_blank"
                     rel="noreferrer"
                     onClick={(e) => e.stopPropagation()}
-                    className="mt-6 inline-flex items-center gap-2 px-4 py-2.5 bg-stone-950 text-[#F5EBDD] text-[13px] font-semibold transition-colors hover:bg-[#00F0FF] hover:text-stone-950 cursor-pointer"
+                    className="mt-7 inline-flex items-center gap-2 px-5 py-2.5 text-[12.5px] font-semibold text-[#1F1606] transition-[filter,transform] hover:brightness-110 active:scale-[0.98] cursor-pointer"
+                    style={{ backgroundImage: FOIL_GRADIENT, boxShadow: "0 4px 14px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.5)" }}
                   >
-                    Open certificates
+                    View certificates
                     <ExternalLink className="w-3.5 h-3.5" />
                   </a>
                 </div>
 
-                <div className="relative z-10 pt-3 border-t-2 border-stone-900 flex items-center justify-between gap-3">
+                <div className="relative z-10 flex items-end justify-between gap-3 pt-4 border-t border-[#C9A55E]/25">
                   <div>
-                    <div className="text-[12px] font-black">{HARSHIL_BIO.fullName}</div>
-                    <div className="text-[11px] font-mono text-stone-700">CSIT · MVSR</div>
+                    <div className="text-[12px] font-semibold uppercase tracking-[0.2em]" style={foilText}>
+                      {HARSHIL_BIO.fullName}
+                    </div>
+                    <div className="mt-1 text-[10.5px] text-[#C9C2B2]/60">{SPAN_LABEL}</div>
                   </div>
                   <button
                     type="button"
@@ -649,7 +796,7 @@ export const StPageFlipBook = forwardRef<StPageFlipBookHandle, StPageFlipBookPro
                       resetBook();
                       setCurrentPage(0);
                     }}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-stone-900/50 text-[12px] font-semibold transition-colors hover:bg-stone-950 hover:text-[#F5EBDD] cursor-pointer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-[#C9A55E]/40 text-[11.5px] font-medium text-[#E6D3A3] transition-colors hover:bg-[#C9A55E]/15 cursor-pointer shrink-0"
                   >
                     <RotateCcw className="w-3.5 h-3.5" />
                     Back to cover
@@ -673,7 +820,7 @@ export const StPageFlipBook = forwardRef<StPageFlipBookHandle, StPageFlipBookPro
               <ChevronLeft className="w-4 h-4" />
             </button>
 
-            <span className="min-w-[9.5rem] text-center text-[13px] font-mono text-zinc-300 tabular-nums" aria-live="polite">
+            <span className="min-w-[10.5rem] text-center text-[13px] font-mono text-zinc-300 tabular-nums" aria-live="polite">
               {pageLabel}
             </span>
 
@@ -689,7 +836,7 @@ export const StPageFlipBook = forwardRef<StPageFlipBookHandle, StPageFlipBookPro
           </div>
 
           {/* Progress rail: one stop per spread */}
-          <div className="flex items-center gap-1.5" role="group" aria-label="Jump to page">
+          <div className="flex flex-wrap justify-center items-center gap-1.5 max-w-full px-2" role="group" aria-label="Jump to page">
             {stops.map((stop, i) => (
               <button
                 key={stop.index}
@@ -709,7 +856,7 @@ export const StPageFlipBook = forwardRef<StPageFlipBookHandle, StPageFlipBookPro
             ))}
           </div>
 
-          <p className="hidden sm:block text-[12px] text-zinc-500">
+          <p className="hidden sm:block text-[12px] text-zinc-400">
             Drag a page corner, click a page, or use the arrow keys
           </p>
         </div>

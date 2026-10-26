@@ -1,7 +1,7 @@
 import express from "express";
 import path from "path";
 import { createServer as createViteServer } from "vite";
-import { processNotification } from "./server/brevo";
+import { diagnoseBrevo, isAllowedOrigin, processNotification } from "./server/brevo";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -14,16 +14,20 @@ async function startServer() {
   app.use(express.json());
 
   // Health check endpoint
-  app.get("/api/health", (req, res) => {
+  app.get("/api/health", async (req, res) => {
     res.json({
       status: "ok",
       brevoConfigured: Boolean(process.env.BREVO_API_KEY),
+      ...(req.query.check === "brevo" ? { brevo: await diagnoseBrevo() } : {}),
       timestamp: new Date().toISOString(),
     });
   });
 
   // Private Visitor Notification Endpoint
   app.post("/api/notify", async (req, res) => {
+    if (!isAllowedOrigin(req)) {
+      return res.status(403).json({ success: false, error: "Forbidden" });
+    }
     try {
       const { eventType, page, device, browser, screen, timestamp, details } = req.body;
 

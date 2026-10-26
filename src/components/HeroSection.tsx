@@ -1,18 +1,27 @@
 import { HARSHIL_BIO } from "../data/portfolioData";
 import { ArrowDown, FileText, Sparkles } from "lucide-react";
+import { Reveal } from "./ScrollMotion";
 
 interface HeroSectionProps {
   onOpenPlayground: () => void;
   onOpenResume: () => void;
+  /** False during the opening intro, while the particles form the name */
+  revealed?: boolean;
 }
 
-export function HeroSection({ onOpenPlayground, onOpenResume }: HeroSectionProps) {
+export function HeroSection({ onOpenPlayground, onOpenResume, revealed = true }: HeroSectionProps) {
   return (
     <section
       id="hero"
-      className="relative min-h-screen flex flex-col justify-between items-center text-center px-4 pt-28 pb-12 z-10 pointer-events-none"
+      inert={!revealed}
+      className="relative min-h-screen flex flex-col justify-between items-center text-center px-4 pt-28 pb-12 z-10 pointer-events-none touch-pan-y"
+      style={{
+        opacity: revealed ? 1 : 0,
+        transform: revealed ? "none" : "translateY(18px)",
+        transition: "opacity 900ms ease, transform 1100ms cubic-bezier(0.16, 1, 0.3, 1)",
+      }}
     >
-      <div className="my-auto max-w-4xl mx-auto space-y-6 pointer-events-auto">
+      <Reveal enter={false} className="my-auto max-w-4xl mx-auto space-y-6 pointer-events-auto">
         <div className="h-140" />
 
         {/* Hero Title Overlay */}
@@ -127,7 +136,7 @@ export function HeroSection({ onOpenPlayground, onOpenResume }: HeroSectionProps
             View Résumé
           </button>
         </div>
-      </div>
+      </Reveal>
 
       <div className="flex flex-col items-center gap-1 text-xs text-zinc-400 font-mono animate-bounce pb-2 mt-8">
         <span>Scroll down for more details</span>

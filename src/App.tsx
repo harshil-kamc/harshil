@@ -5,10 +5,11 @@ import { AboutSection } from "./components/AboutSection";
 import { CompetitionsSection } from "./components/CompetitionsSection";
 import { ProjectsSection } from "./components/ProjectsSection";
 import { SkillsSection } from "./components/SkillsSection";
-import { ContactSection } from "./components/ContactSection";
 import { Footer } from "./components/Footer";
 import { PlaygroundModal } from "./components/PlaygroundModal";
 import { ResumeModal } from "./components/ResumeModal";
+import { ScrollProgress } from "./components/ScrollMotion";
+import { IntroOverlay } from "./components/IntroOverlay";
 import { DEFAULT_PARTICLE_IMAGES } from "./data/portfolioData";
 import { trackNewVisitor, trackParticleLabOpened } from "./utils/notificationTracker";
 
@@ -20,12 +21,35 @@ const HERO_SEQUENCE = [
   ...DEFAULT_PARTICLE_IMAGES,
 ];
 
+// Sections whose particle word alternates with a 3D shape (GPU engine only; the 2D engine shows the word)
+const SECTION_SEQUENCES: Record<string, string[]> = {
+  hero: HERO_SEQUENCE,
+  competitions: ["COMPETITIONS", "SHAPE:trophy"],
+  skills: ["SKILLS", "SHAPE:atom"],
+};
+
+// Opening sequence: dust condenses into the name before the hero appears.
+// Full length on a first visit, short for returning visitors, skipped for reduced motion.
+const INTRO_WORD = "HARSHIL";
+const INTRO_SEEN_KEY = "hk_intro_seen";
+const getIntroDuration = () => {
+  if (typeof window === "undefined") return 0;
+  if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return 0;
+  try {
+    return localStorage.getItem(INTRO_SEEN_KEY) ? 1200 : 3000;
+  } catch {
+    return 3000;
+  }
+};
+
 export default function App() {
+  const [introDuration] = useState(getIntroDuration);
+  const [introDone, setIntroDone] = useState(introDuration === 0);
   const [activeSection, setActiveSection] = useState<string>("hero");
   const [isPlaygroundOpen, setIsPlaygroundOpen] = useState<boolean>(false);
   const [isResumeOpen, setIsResumeOpen] = useState<boolean>(false);
   const [customSequence, setCustomSequence] = useState<string[] | null>(null);
-  const [currentWord, setCurrentWord] = useState<string>("HI");
+  const [currentWord, setCurrentWord] = useState<string>(() => (introDuration === 0 ? "HI" : INTRO_WORD));
   const [particleMode, setParticleMode] = useState<"text" | "image">("text");
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [imageErrorMessage, setImageErrorMessage] = useState<string | null>(null);
@@ -33,6 +57,16 @@ export default function App() {
   // Track initial visitor session (once per session, no PII, no referrer)
   useEffect(() => {
     trackNewVisitor();
+  }, []);
+
+  const finishIntro = useCallback(() => {
+    setIntroDone(true);
+    setCurrentWord("HI");
+    try {
+      localStorage.setItem(INTRO_SEEN_KEY, "1");
+    } catch {
+      // Storage blocked: the full intro simply plays again next time
+    }
   }, []);
 
   // Track Particle Lab opening
@@ -43,7 +77,7 @@ export default function App() {
 
   // Scroll Section Intersection Observer
   useEffect(() => {
-    const sectionIds = ["hero", "about", "competitions", "projects", "skills", "contact"];
+    const sectionIds = ["hero", "about", "competitions", "projects", "skills"];
 
     const handleScroll = () => {
       if (customSequence || particleMode === "image") return; // Don't override if custom sequence or image mode active
@@ -76,9 +110,6 @@ export default function App() {
                   break;
                 case "skills":
                   setCurrentWord("SKILLS");
-                  break;
-                case "contact":
-                  setCurrentWord("CONTACT");
                   break;
               }
             }
@@ -130,11 +161,11 @@ export default function App() {
       {/* Background Interactive Particle Canvas */}
       <ParticleCanvasManager
         currentWord={currentWord}
-        wordSequence={customSequence || (activeSection === "hero" ? HERO_SEQUENCE : undefined)}
-        autoCycle={activeSection === "hero" || !!customSequence}
+        wordSequence={introDone ? customSequence || SECTION_SEQUENCES[activeSection] : undefined}
+        autoCycle={introDone && !!(customSequence || SECTION_SEQUENCES[activeSection])}
         cycleInterval={260}
         mode={particleMode}
-        showBackdrop={activeSection === "hero" && currentWord !== "ABOUT" && particleMode === "text"}
+        showBackdrop={introDone && activeSection === "hero" && currentWord !== "ABOUT" && particleMode === "text"}
         imageUrl={imageUrl}
         onImageError={(err) => setImageErrorMessage(err)}
       />
@@ -170,9 +201,13 @@ export default function App() {
         </div>
       )}
 
+      <ScrollProgress />
+      {!introDone && <IntroOverlay duration={introDuration} onDone={finishIntro} />}
+
       {/* Main Content Sections (Overlays over the particle canvas) */}
       <main className="relative z-10">
         <HeroSection
+          revealed={introDone}
           onOpenPlayground={handleOpenPlayground}
           onOpenResume={() => setIsResumeOpen(true)}
         />
@@ -180,7 +215,6 @@ export default function App() {
         <CompetitionsSection />
         <ProjectsSection />
         <SkillsSection />
-        <ContactSection />
         <Footer onOpenPlayground={handleOpenPlayground} />
       </main>
 

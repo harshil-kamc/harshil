@@ -240,7 +240,7 @@ export function PlaygroundModal({
                   <span className="text-[10px] text-[#38BDF8] font-mono">Any image address, Google Images</span>
                 </label>
                 <div className="relative">
-                  <Link className="w-4 h-4 text-zinc-500 absolute left-4 top-3.5" />
+                  <Link className="w-4 h-4 text-zinc-400 absolute left-4 top-3.5" />
                   <input
                     type="text"
                     required
@@ -256,7 +256,7 @@ export function PlaygroundModal({
                     Render
                   </button>
                 </div>
-                <div className="flex flex-wrap gap-1.5 pt-1 text-[10px] font-mono text-zinc-500">
+                <div className="flex flex-wrap gap-1.5 pt-1 text-[10px] font-mono text-zinc-400">
                   <p className="px-2 py-0.5 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-400">1. Google Search images</p>
                   <p className="px-2 py-0.5 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-400">2. Choose an image</p>
                   <p className="px-2 py-0.5 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-400">3. Copy image address</p>

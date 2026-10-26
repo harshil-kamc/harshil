@@ -20,7 +20,10 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "erasableSyntaxOnly": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+
+    /* Same import alias as vite.config.ts and tsconfig.json */
+    "paths": { "@/*": ["./*"] }
   },
   "include": ["src"]
 }

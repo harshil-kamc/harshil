@@ -6,7 +6,7 @@ interface FooterTipsProps {
 
 const TIPS: { text: string; action?: "hero" | "lab" }[] = [
   {
-    text: "💡 Tip: To interact with particles, scroll up to the hero section",
+    text: "💥 Tip: Click or tap the particles at the top of the page to send a shockwave",
     action: "hero"
   },
   {
@@ -14,7 +14,7 @@ const TIPS: { text: string; action?: "hero" | "lab" }[] = [
     action: "lab"
   },
   {
-    text: "🖱️ Tip: Click and hold left mouse button to rub, drag & disturb the particles",
+    text: "🖱️ Tip: Move your cursor over any particle word to ripple it, and watch it tilt toward you",
   },
   {
     text: "🖼️ Tip: You can upload and render your own custom images in Particle Lab",
@@ -25,7 +25,7 @@ const TIPS: { text: string; action?: "hero" | "lab" }[] = [
     action: "lab"
   },
   {
-    text: "⚡ Tip: Move your cursor rapidly across particles to trigger repulsion shockwaves",
+    text: "🏆 Tip: Wait a moment in Competitions and Skills to see the particles form 3D shapes",
   }
 ];
 
@@ -54,6 +54,7 @@ export function FooterTips({ onOpenPlayground }: FooterTipsProps) {
   }, []);
 
   const currentTip = TIPS[index];
+  const TipTag = currentTip.action ? "button" : "div";
 
   const handleClick = () => {
     if (currentTip.action === "hero") {
@@ -67,8 +68,8 @@ export function FooterTips({ onOpenPlayground }: FooterTipsProps) {
 
   return (
     <div className="w-full overflow-hidden py-2 flex items-center justify-center select-none">
-      <div
-        onClick={currentTip.action ? handleClick : undefined}
+      <TipTag
+        {...(currentTip.action ? { type: "button" as const, onClick: handleClick } : {})}
         className={`transition-all ${
           phase === "enter" ? "duration-0" : "duration-500"
         } ease-out transform ${
@@ -82,7 +83,7 @@ export function FooterTips({ onOpenPlayground }: FooterTipsProps) {
         } text-xs sm:text-sm text-zinc-400/90 text-center font-normal tracking-wide max-w-xl px-4`}
       >
         <span>{currentTip.text}</span>
-      </div>
+      </TipTag>
     </div>
   );
 }

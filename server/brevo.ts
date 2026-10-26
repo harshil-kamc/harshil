@@ -10,6 +10,68 @@ interface NotificationPayload {
   details?: Record<string, any>;
 }
 
+// Values that end up inside the alert email come from the visitor's browser, so they are never
+// trusted: device and browser must be one of the names the site's own tracker sends, the page must
+// look like a path, and everything is HTML-escaped before it is placed in the email.
+const KNOWN_DEVICES = new Set(["Desktop", "Tablet", "Mobile", "Unknown"]);
+const KNOWN_BROWSERS = new Set([
+  "Microsoft Edge",
+  "Google Chrome",
+  "Mozilla Firefox",
+  "Apple Safari",
+  "Opera",
+  "Web Browser",
+  "Unknown",
+]);
+
+export function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function sanitizePayload(payload: NotificationPayload): NotificationPayload {
+  const page = typeof payload.page === "string" && /^\/[\w\-./#]{0,80}$/.test(payload.page) ? payload.page : "/";
+  const device = KNOWN_DEVICES.has(payload.device) ? payload.device : "Unknown";
+  const browser = KNOWN_BROWSERS.has(payload.browser) ? payload.browser : "Web Browser";
+  const parsedTime = Date.parse(payload.timestamp);
+  const timestamp = Number.isFinite(parsedTime) ? new Date(parsedTime).toISOString() : new Date().toISOString();
+  return { eventType: payload.eventType, page, device, browser, timestamp };
+}
+
+/**
+ * Only the site itself may trigger alerts: browsers always send an Origin header on POST,
+ * so a request without one, or from another site, is refused. (A script can still forge the
+ * header, which is why there is also a cooldown and an hourly cap.)
+ */
+export function isAllowedOrigin(req: Request): boolean {
+  const origin = req.headers.origin;
+  if (typeof origin !== "string") return false;
+  let originHost: string;
+  try {
+    originHost = new URL(origin).host;
+  } catch {
+    return false;
+  }
+  const forwardedHost = req.headers["x-forwarded-host"];
+  const host = (typeof forwardedHost === "string" ? forwardedHost.split(",")[0]?.trim() : undefined) || req.headers.host;
+  if (originHost === host) return true;
+  return /^(localhost|127\.0\.0\.1)(:\d+)?$/.test(originHost) && /^(localhost|127\.0\.0\.1)(:\d+)?$/.test(host || "");
+}
+
+// Upper bound on emails per server instance per hour, so a flood of requests from many addresses
+// can't exhaust the Brevo quota or the inbox. Vercel may run several instances, so this is a
+// backstop; a Vercel Firewall rate-limit rule on /api/notify is the stronger limit.
+const MAX_EMAILS_PER_HOUR = 20;
+const sentTimestamps: number[] = [];
+function hourlyCapReached(now: number): boolean {
+  while (sentTimestamps.length && now - sentTimestamps[0] > 60 * 60 * 1000) sentTimestamps.shift();
+  return sentTimestamps.length >= MAX_EMAILS_PER_HOUR;
+}
+
 // In-memory cooldown cache for deduplication (per IP + event type)
 const eventCooldownCache = new Map<string, number>();
 const COOLDOWN_DURATION_MS = 15 * 60 * 1000; // 15 minutes cooldown per event type per visitor
@@ -41,7 +103,8 @@ async function getApproximateLocation(req: Request, ip: string): Promise<string>
   if (cfCountry) return `Country: ${cfCountry}`;
 
   const vercelCountry = req.headers["x-vercel-ip-country"] as string;
-  const vercelCity = req.headers["x-vercel-ip-city"] as string;
+  const vercelCityRaw = req.headers["x-vercel-ip-city"] as string | undefined;
+  const vercelCity = vercelCityRaw ? decodeURIComponent(vercelCityRaw) : undefined;
   if (vercelCountry && vercelCity) return `${vercelCity}, ${vercelCountry}`;
   if (vercelCountry) return `Country: ${vercelCountry}`;
 
@@ -258,23 +321,23 @@ function generateEmailHtml(data: {
           </tr>
           <tr class="data-row">
             <td class="data-label">Time (IST)</td>
-            <td class="data-value">${data.timeFormatted}</td>
+            <td class="data-value">${escapeHtml(data.timeFormatted)}</td>
           </tr>
           <tr class="data-row">
             <td class="data-label">Page</td>
-            <td class="data-value"><code>${data.page}</code></td>
+            <td class="data-value"><code>${escapeHtml(data.page)}</code></td>
           </tr>
           <tr class="data-row">
             <td class="data-label">Device</td>
-            <td class="data-value">${data.device}</td>
+            <td class="data-value">${escapeHtml(data.device)}</td>
           </tr>
           <tr class="data-row">
             <td class="data-label">Browser</td>
-            <td class="data-value">${data.browser}</td>
+            <td class="data-value">${escapeHtml(data.browser)}</td>
           </tr>
           <tr class="data-row">
             <td class="data-label">Location</td>
-            <td class="data-value">${data.location}</td>
+            <td class="data-value">${escapeHtml(data.location)}</td>
           </tr>
         </table>
       </div>
@@ -291,8 +354,87 @@ function generateEmailHtml(data: {
   `;
 }
 
-export async function processNotification(req: Request, payload: NotificationPayload): Promise<{ success: boolean; message: string }> {
+const DEFAULT_EMAIL = "heybreakindown@gmail.com";
+const getSenderEmail = () =>
+  process.env.BREVO_SENDER_EMAIL || process.env.NOTIFICATION_RECIPIENT_EMAIL || DEFAULT_EMAIL;
+
+export interface BrevoDiagnosis {
+  keyConfigured: boolean;
+  keyAccepted?: boolean;
+  senderVerified?: boolean;
+  usingDefaultAddresses: boolean;
+  /** Plain-language next step; never includes the key or any email address */
+  problem?: string;
+}
+
+/**
+ * Checks the Brevo setup without sending an email: is the key set, does Brevo accept it
+ * from this server's IP, and is the sender address verified.
+ */
+// The diagnosis calls Brevo twice, and the health endpoint is public, so the result is cached
+// to stop repeated requests from using up the Brevo API limits
+const DIAGNOSIS_TTL_MS = 5 * 60 * 1000;
+let cachedDiagnosis: { at: number; result: BrevoDiagnosis } | null = null;
+
+export async function diagnoseBrevo(): Promise<BrevoDiagnosis> {
+  const now = Date.now();
+  if (cachedDiagnosis && now - cachedDiagnosis.at < DIAGNOSIS_TTL_MS) return cachedDiagnosis.result;
+  const result = await runBrevoDiagnosis();
+  cachedDiagnosis = { at: now, result };
+  return result;
+}
+
+async function runBrevoDiagnosis(): Promise<BrevoDiagnosis> {
+  const apiKey = process.env.BREVO_API_KEY;
+  const usingDefaultAddresses = !process.env.BREVO_SENDER_EMAIL && !process.env.NOTIFICATION_RECIPIENT_EMAIL;
+  if (!apiKey) {
+    return {
+      keyConfigured: false,
+      usingDefaultAddresses,
+      problem: "BREVO_API_KEY is not set for this deployment. Add it in Vercel, then redeploy.",
+    };
+  }
+
+  const headers = { accept: "application/json", "api-key": apiKey };
+  try {
+    const account = await fetch("https://api.brevo.com/v3/account", { headers });
+    if (!account.ok) {
+      const body = await account.text();
+      const ipBlocked = /ip/i.test(body) && /(unrecogni[sz]ed|authori[sz]ed|not allowed)/i.test(body);
+      return {
+        keyConfigured: true,
+        keyAccepted: false,
+        usingDefaultAddresses,
+        problem: ipBlocked
+          ? "Brevo rejected this server's IP address. In Brevo, open Security > Authorised IPs and deactivate IP blocking (Vercel has no fixed IP)."
+          : `Brevo rejected the API key (HTTP ${account.status}). Create a new v3 API key in Brevo and update BREVO_API_KEY.`,
+      };
+    }
+
+    const sendersRes = await fetch("https://api.brevo.com/v3/senders", { headers });
+    const senders = sendersRes.ok
+      ? (((await sendersRes.json()) as { senders?: { email: string; active: boolean }[] }).senders ?? [])
+      : [];
+    const senderEmail = getSenderEmail().toLowerCase();
+    const senderVerified = senders.some((s) => s.email.toLowerCase() === senderEmail && s.active);
+
+    return {
+      keyConfigured: true,
+      keyAccepted: true,
+      senderVerified,
+      usingDefaultAddresses,
+      problem: senderVerified
+        ? undefined
+        : "The sender address is not a verified, active sender in Brevo. Verify it under Senders, Domains & Dedicated IPs, or set BREVO_SENDER_EMAIL to one that is.",
+    };
+  } catch (err: any) {
+    return { keyConfigured: true, usingDefaultAddresses, problem: `Could not reach Brevo: ${err?.message || "network error"}` };
+  }
+}
+
+export async function processNotification(req: Request, rawPayload: NotificationPayload): Promise<{ success: boolean; message: string }> {
   cleanOldCooldowns();
+  const payload = sanitizePayload(rawPayload);
 
   const ip = getClientIp(req);
   const cooldownKey = `${ip}_${payload.eventType}`;
@@ -307,16 +449,21 @@ export async function processNotification(req: Request, payload: NotificationPay
     };
   }
 
+  if (hourlyCapReached(now)) {
+    return { success: false, message: "Hourly alert limit reached" };
+  }
+
   // Check Brevo credentials
   const brevoApiKey = process.env.BREVO_API_KEY;
-  const senderEmail = process.env.BREVO_SENDER_EMAIL || process.env.NOTIFICATION_RECIPIENT_EMAIL || "heybreakindown@gmail.com";
-  const recipientEmail = process.env.NOTIFICATION_RECIPIENT_EMAIL || "heybreakindown@gmail.com";
+  const senderEmail = getSenderEmail();
+  const recipientEmail = process.env.NOTIFICATION_RECIPIENT_EMAIL || DEFAULT_EMAIL;
 
   if (!brevoApiKey) {
     console.warn("[Portfolio Monitor] BREVO_API_KEY environment variable is not configured. Email notification skipped.");
+    // Reported as a failure so it shows up in logs instead of passing silently
     return {
-      success: true,
-      message: "BREVO_API_KEY not configured yet on server",
+      success: false,
+      message: "BREVO_API_KEY not configured on server",
     };
   }
 
@@ -415,6 +562,7 @@ export async function processNotification(req: Request, payload: NotificationPay
 
     // Set cooldown on successful transmission
     eventCooldownCache.set(cooldownKey, now);
+    sentTimestamps.push(now);
     console.log(`[Portfolio Monitor] Sent email alert for event "${payload.eventType}" to ${recipientEmail}`);
 
     return {

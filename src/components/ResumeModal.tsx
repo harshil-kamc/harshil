@@ -158,7 +158,7 @@ export function ResumeModal({ isOpen, onClose }: ResumeModalProps) {
 
           {(status === "missing" || status === "error") && (
             <div className="flex flex-col items-center justify-center gap-2 py-24 text-center text-sm text-zinc-400">
-              <FileText className="w-8 h-8 text-zinc-600" />
+              <FileText className="w-8 h-8 text-zinc-400" />
               <p className="text-zinc-300 font-medium">
                 {status === "missing" ? "Résumé is being updated." : "The résumé couldn't be displayed."}
               </p>

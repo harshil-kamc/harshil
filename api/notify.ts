@@ -1,7 +1,7 @@
 import type { IncomingMessage, ServerResponse } from "http";
 import type { Request } from "express";
 // Explicit .js extension: Vercel runs this as native ESM ("type": "module")
-import { processNotification } from "../server/brevo.js";
+import { isAllowedOrigin, processNotification } from "../server/brevo.js";
 
 type VercelRequest = IncomingMessage & { body?: any };
 type VercelResponse = ServerResponse & {
@@ -13,6 +13,9 @@ type VercelResponse = ServerResponse & {
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "POST") {
     return res.status(405).json({ success: false, error: "Method not allowed" });
+  }
+  if (!isAllowedOrigin(req as unknown as Request)) {
+    return res.status(403).json({ success: false, error: "Forbidden" });
   }
 
   try {

@@ -1,13 +1,15 @@
 import { HARSHIL_BIO } from "../data/portfolioData";
 import { Code, GraduationCap, MapPin, CheckCircle2 } from "lucide-react";
+import { Reveal } from "./ScrollMotion";
 
 export function AboutSection() {
   return (
-    <section id="about" className="relative pt-4 pb-28 px-4 z-10">
+    <section id="about" aria-labelledby="about-heading" className="relative pt-4 pb-28 px-4 z-10">
+      <h2 id="about-heading" className="sr-only">About me</h2>
       {/* Spacing above About Section for particle word "ABOUT" to form in clear view */}
       <div className="h-80 min-h-[17.5rem] w-full pointer-events-none" aria-hidden="true" />
 
-      <div className="max-w-5xl mx-auto space-y-12">
+      <Reveal className="max-w-5xl mx-auto space-y-12">
        
 
         {/* Main Content Grid */}
@@ -25,7 +27,7 @@ export function AboutSection() {
                 {HARSHIL_BIO.aboutText}
               </p>
               <p className="text-[#9A9AA3] text-sm leading-relaxed">
-                Whether it's building responsive React frontends, engineering Node.js microservices, or developing interactive HTML5 canvas particle engines, I focus on clean code, mathematical precision, and memorable user experiences.
+                Whether it's a React frontend, a Node.js backend for a hackathon project, or the WebGL particle engine running on this page, I care about clean code, smooth performance, and interfaces people enjoy using.
               </p>
             </div>
 
@@ -34,7 +36,7 @@ export function AboutSection() {
               <div className="flex items-center gap-3 p-3.5 rounded-full bg-white/5 backdrop-blur-xs border border-white/5 text-xs text-zinc-300">
                 <GraduationCap className="w-4 h-4 text-[#00F0FF] shrink-0 ml-1" />
                 <div>
-                  <span className="block text-zinc-500 font-mono text-[10px]">EDUCATION</span>
+                  <span className="block text-zinc-400 font-mono text-[10px]">EDUCATION</span>
                   <span className="font-semibold text-white">{HARSHIL_BIO.education}</span>
                 </div>
               </div>
@@ -49,7 +51,7 @@ export function AboutSection() {
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-[#00F0FF]" />
-                <span>Experienced in Full-Stack TypeScript & AI Integration</span>
+                <span>Built 6 projects at hackathons, across frontend and backend roles</span>
               </div>
             </div>
           </div>
@@ -57,11 +59,11 @@ export function AboutSection() {
           {/* Stats Sidebar */}
           <div className="md:col-span-5 flex flex-col justify-center">
             {/* Stats Grid */}
-            <div className="grid grid-cols-2 gap-4 h-full">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 md:h-full">
               {HARSHIL_BIO.stats.map((stat, idx) => (
                 <div
                   key={idx}
-                  className="bg-zinc-950/40 backdrop-blur-sm border border-white/10 rounded-3xl p-6 flex flex-col items-center justify-center text-center space-y-2 shadow-xl hover:border-[#00F0FF]/40 transition-all duration-300"
+                  className="bg-zinc-950/40 backdrop-blur-sm border border-white/10 rounded-3xl px-4 py-5 sm:p-6 flex flex-col items-center justify-center text-center space-y-2 shadow-xl hover:border-[#00F0FF]/40 transition-all duration-300"
                 >
                   <span className="block text-2xl sm:text-3xl font-extrabold text-transparent bg-gradient-to-r from-[#00F0FF] to-[#38BDF8] bg-clip-text font-mono">
                     {stat.value}
@@ -74,7 +76,7 @@ export function AboutSection() {
             </div>
           </div>
         </div>
-      </div>
+      </Reveal>
     </section>
   );
 }

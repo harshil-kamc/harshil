@@ -12,6 +12,7 @@ import {
   ChevronRight,
   Images,
 } from "lucide-react";
+import { Reveal } from "./ScrollMotion";
 
 export function ProjectsSection() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
@@ -71,10 +72,12 @@ export function ProjectsSection() {
   };
 
   return (
-    <section id="projects" className="pt-24 pb-8 px-4 sm:px-6 max-w-7xl mx-auto relative font-sans z-10">
+    <section id="projects" aria-labelledby="projects-heading" className="pt-24 pb-8 px-4 sm:px-6 max-w-7xl mx-auto relative font-sans z-10">
+      <h2 id="projects-heading" className="sr-only">Projects</h2>
       {/* Top Section Header */}
       <div className="h-80 min-h-[17.5rem] w-full pointer-events-none" aria-hidden="true" />
 
+      <Reveal>
       {/* 3D Coverflow Carousel Showcase */}
       <div className="relative w-full max-w-5xl mx-auto py-2">
         <CoverflowCarousel
@@ -164,6 +167,8 @@ export function ProjectsSection() {
           </div>
         </div>
       )}
+
+      </Reveal>
 
       {/* Project Detail Modal (Original faithful design) */}
       {selectedProject && (
