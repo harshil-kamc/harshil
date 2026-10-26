@@ -39,14 +39,7 @@ export function AboutSection() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-3 p-3.5 rounded-full bg-white/5 backdrop-blur-xs border border-white/5 text-xs text-zinc-300">
-                <MapPin className="w-4 h-4 text-[#38BDF8] shrink-0 ml-1" />
-                <div>
-                  <span className="block text-zinc-500 font-mono text-[10px]">LOCATION</span>
-                  <span className="font-semibold text-white">{HARSHIL_BIO.location}</span>
-                </div>
-              </div>
-            </div>
+                        </div>
 
             {/* Bullet points */}
             <div className="space-y-2 pt-2 text-xs text-zinc-300">

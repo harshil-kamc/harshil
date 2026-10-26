@@ -17,16 +17,6 @@ export interface Project {
   screenshots?: string[];
 }
 
-export interface ExperienceItem {
-  id: string;
-  role: string;
-  company: string;
-  period: string;
-  location: string;
-  description: string[];
-  skills: string[];
-}
-
 export interface SkillCategory {
   title: string;
   skills: {
@@ -55,6 +45,8 @@ export interface Competition {
   projectRole?: string;
   certificateUrl?: string;
   tags: string[];
+  /** Photo shown on this competition's page in the flipbook */
+  coverImage?: string;
   images?: string[];
 }
 

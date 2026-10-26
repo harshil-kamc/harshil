@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { ParticleCanvasManager } from "./components/ParticleCanvasManager";
 import { HeroSection } from "./components/HeroSection";
 import { AboutSection } from "./components/AboutSection";
@@ -8,6 +8,7 @@ import { SkillsSection } from "./components/SkillsSection";
 import { ContactSection } from "./components/ContactSection";
 import { Footer } from "./components/Footer";
 import { PlaygroundModal } from "./components/PlaygroundModal";
+import { ResumeModal } from "./components/ResumeModal";
 import { DEFAULT_PARTICLE_IMAGES } from "./data/portfolioData";
 import { trackNewVisitor, trackParticleLabOpened } from "./utils/notificationTracker";
 
@@ -22,6 +23,7 @@ const HERO_SEQUENCE = [
 export default function App() {
   const [activeSection, setActiveSection] = useState<string>("hero");
   const [isPlaygroundOpen, setIsPlaygroundOpen] = useState<boolean>(false);
+  const [isResumeOpen, setIsResumeOpen] = useState<boolean>(false);
   const [customSequence, setCustomSequence] = useState<string[] | null>(null);
   const [currentWord, setCurrentWord] = useState<string>("HI");
   const [particleMode, setParticleMode] = useState<"text" | "image">("text");
@@ -89,6 +91,8 @@ export default function App() {
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, [activeSection, customSequence, particleMode]);
+
+  const closeResume = useCallback(() => setIsResumeOpen(false), []);
 
   const handleApplyCustomWord = (words: string[]) => {
     setParticleMode("text");
@@ -170,6 +174,7 @@ export default function App() {
       <main className="relative z-10">
         <HeroSection
           onOpenPlayground={handleOpenPlayground}
+          onOpenResume={() => setIsResumeOpen(true)}
         />
         <AboutSection />
         <CompetitionsSection />
@@ -190,6 +195,9 @@ export default function App() {
         activeMode={particleMode}
         currentImageUrl={imageUrl}
       />
+
+      {/* Read-only Résumé Viewer */}
+      <ResumeModal isOpen={isResumeOpen} onClose={closeResume} />
     </div>
   );
 }

@@ -17,7 +17,7 @@
 /* Natural-color portrait wallpaper behind the hero particle text. */
 .ascii-hero-backdrop {
   background-color: transparent;
-  background-image: url('/hero-portrait.png');
+  background-image: url('/hero-portrait.webp');
   background-repeat: no-repeat;
   background-position: right center;
   background-size: cover;
@@ -26,7 +26,7 @@
 
 @media (max-width: 768px), (max-aspect-ratio: 1/1) {
   .ascii-hero-backdrop {
-    background-image: url('/hero-portrait-mobile.png');
+    background-image: url('/hero-portrait-mobile.webp');
     background-position: center center;
     background-size: cover;
   }
@@ -55,4 +55,32 @@ html, body {
   100% {
     width: 100%;
   }
+}
+
+/* Hero social icons: always glowing in their brand colour, brighter on hover.
+   Each icon sets its colour through the --glow custom property. */
+.social-glow {
+  filter: drop-shadow(0 0 6px var(--glow));
+  transition: filter 0.3s ease, transform 0.3s ease, color 0.3s ease;
+  animation: social-glow-breathe 3s ease-in-out infinite;
+}
+
+.social-glow:nth-child(2) { animation-delay: 0.75s; }
+.social-glow:nth-child(3) { animation-delay: 1.5s; }
+.social-glow:nth-child(4) { animation-delay: 2.25s; }
+
+.social-glow:hover,
+.social-glow:focus-visible {
+  animation: none;
+  transform: scale(1.18);
+  filter: drop-shadow(0 0 10px var(--glow)) drop-shadow(0 0 22px var(--glow));
+}
+
+@keyframes social-glow-breathe {
+  0%, 100% { filter: drop-shadow(0 0 5px var(--glow)); }
+  50% { filter: drop-shadow(0 0 11px var(--glow)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .social-glow { animation: none; }
 }

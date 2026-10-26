@@ -1,4 +1,4 @@
-import { Project, ExperienceItem, SkillCategory, EducationItem, Competition } from "../types/portfolio";
+import { Project, SkillCategory, EducationItem, Competition } from "../types/portfolio";
 import { PageFlipLeaf } from "../components/lightswind/3d-image-pageflip";
 
 export const EDUCATION_DATA: EducationItem[] = [
@@ -41,6 +41,8 @@ export const COMPETITION_CERTIFICATES_DRIVE_URL = "https://drive.google.com/driv
 export const COMPETITIONS_LIST: Competition[] = [
   {
     id: "comp-1",
+    // Placeholder stock photo: replace with a real event photo (e.g. an imgbb link)
+    coverImage: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=1000&q=80",
     title: "IEEE Cyber Ektha CTF Hackathon",
     organizer: "MVSR Engineering College & IEEE",
     venue: "MVSR Engineering College",
@@ -80,6 +82,8 @@ export const COMPETITIONS_LIST: Competition[] = [
   },
   {
     id: "comp-3",
+    // Placeholder stock photo: replace with a real event photo (e.g. an imgbb link)
+    coverImage: "https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&w=1000&q=80",
     title: "CodeSangram Online Hackathon",
     organizer: "Quizcred & Unstop",
     venue: "Online",
@@ -98,6 +102,8 @@ export const COMPETITIONS_LIST: Competition[] = [
   },
   {
     id: "comp-4",
+    // Placeholder stock photo: replace with a real event photo (e.g. an imgbb link)
+    coverImage: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1000&q=80",
     title: "National AI/ML Hackathon",
     organizer: "Vivriti Capital, Yuvaan & Unstop",
     venue: "Online",
@@ -116,6 +122,8 @@ export const COMPETITIONS_LIST: Competition[] = [
   },
   {
     id: "comp-5",
+    // Placeholder stock photo: replace with a real event photo (e.g. an imgbb link)
+    coverImage: "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=1000&q=80",
     title: "GFG Hackfest",
     organizer: "GeeksForGeeks (GFG)",
     venue: "GFG Institution, Madhapur",
@@ -135,6 +143,8 @@ export const COMPETITIONS_LIST: Competition[] = [
   },
   {
     id: "comp-6",
+    // Placeholder stock photo: replace with a real event photo (e.g. an imgbb link)
+    coverImage: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1000&q=80",
     title: "Forge Inspira 2026",
     organizer: "Forge Alumnus & IIT Hyderabad",
     venue: "IIT Hyderabad",
@@ -153,6 +163,8 @@ export const COMPETITIONS_LIST: Competition[] = [
   },
   {
     id: "comp-7",
+    // Placeholder stock photo: replace with a real event photo (e.g. an imgbb link)
+    coverImage: "https://images.unsplash.com/photo-1541872703-74c5e44368f9?auto=format&fit=crop&w=1000&q=80",
     title: "MYBHARAT Budget Quest 2026",
     organizer: "Ministry of Youth Affairs / MyBharat, Govt. of India",
     venue: "Kanha Shanti Vanam, Hyderabad",
@@ -170,6 +182,8 @@ export const COMPETITIONS_LIST: Competition[] = [
   },
   {
     id: "comp-8",
+    // Placeholder stock photo: replace with a real event photo (e.g. an imgbb link)
+    coverImage: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1000&q=80",
     title: "Aethronix Hackathon (Samavarthan 2k26)",
     organizer: "MVSR Engineering College",
     venue: "MVSR Engineering College",
@@ -188,6 +202,8 @@ export const COMPETITIONS_LIST: Competition[] = [
   },
   {
     id: "comp-9",
+    // Placeholder stock photo: replace with a real event photo (e.g. an imgbb link)
+    coverImage: "https://images.unsplash.com/photo-1562813733-b31f71025d54?auto=format&fit=crop&w=1000&q=80",
     title: "Secleaf Q2 CTF 2026",
     organizer: "Secleaf",
     venue: "International / Online",
@@ -284,7 +300,7 @@ export const COMPETITION_FLIPBOOK_PAGES: PageFlipLeaf[] = [
       awardRank: "1st",
       description: "Comprehensive track record across 9 competitive hackathons and CTFs in 6 months, building civic tech platforms (Localoop), credit risk AI models, deepfake analyzers (DeepSafe), fake news detectors (TruthNova), AI hiring platforms (OrbitHire), and career guides (PathPilot AI).",
       certificateUrl: COMPETITION_CERTIFICATES_DRIVE_URL,
-      tags: ["9 Hackathons", "3 Wins", "Civic Tech", "AI/ML", "Cybersecurity", "GPA 9.39"]
+      tags: ["9 Hackathons", "3 Wins", "Civic Tech", "AI/ML", "Cybersecurity"]
     },
     backImage: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80",
     backTitle: "Certificate Vault",
@@ -313,8 +329,7 @@ export const HARSHIL_BIO = {
   role: "Student Coder & Tech Enthusiast",
   tagline: "Coding my way through technology, with a little help from AI.",
   aboutText: `I am a computer science student with a deep fascination for interactive graphics, full-stack systems, and elegant user interfaces. I love taking complex technical challenges and turning them into intuitive, visually fluid digital experiences.`,
-  location: "Meerpet,500097",
-  phone: "+91 6304654185",
+  whatsapp: "916304654185", // Used only for the wa.me link; number is not displayed
   email: "Harshilkamc@gmail.com",
   portfolioUrl: "https://harshil-kamc.github.io/Portfolio/",
   education: "B.E. in CSIT (MVSR Engineering College)",
@@ -325,54 +340,13 @@ export const HARSHIL_BIO = {
     { label: "Projects Completed", value: "8+" },
     { label: "Competitions & Hackathons", value: "9" },
     { label: "1st Place & State Wins", value: "3" },
-    { label: "Academic Excellence", value: "9.39 GPA" },
+    { label: "Intermediate (MPC) Score", value: "9.39" },
   ]
 };
 
 export const DEFAULT_PARTICLE_IMAGES = [
   "https://i.ibb.co/8DpK0v51/264511853.png", 
   
-];
-
-export const EXPERIENCE_DATA: ExperienceItem[] = [
-  {
-    id: "exp-1",
-    role: "Full-Stack Developer Intern",
-    company: "NextGen Tech Solutions",
-    period: "2025 - Present",
-    location: "Remote",
-    description: [
-      "Engineered high-throughput REST APIs and real-time dashboard analytics using Node.js and React.",
-      "Optimized client-side rendering performance by 40% using canvas-based custom visualizations and virtualized lists.",
-      "Collaborated with UI/UX designers to implement pixel-perfect dark mode themes and accessible design tokens."
-    ],
-    skills: ["TypeScript", "React", "Node.js", "Canvas API", "Tailwind CSS"]
-  },
-  {
-    id: "exp-2",
-    role: "Student Tech Lead & Mentor",
-    company: "University Computer Science Club",
-    period: "2024 - 2025",
-    location: "Campus",
-    description: [
-      "Led weekly technical workshops teaching web development, algorithms, and version control to 80+ students.",
-      "Architected the annual hackathon portal platform, handling concurrent registrations and live scoring.",
-      "Mentored junior developers in building open-source projects and mastering modern JavaScript."
-    ],
-    skills: ["JavaScript", "Python", "Git", "Community Leadership", "System Design"]
-  },
-  {
-    id: "exp-3",
-    role: "Open Source Contributor",
-    company: "Community Projects",
-    period: "2023 - Present",
-    location: "Global",
-    description: [
-      "Contributed bug fixes and performance enhancements to popular frontend and developer tooling repositories.",
-      "Created reusable canvas particle components and UI micro-interaction libraries for web developers."
-    ],
-    skills: ["TypeScript", "Open Source", "Vite", "Canvas", "Performance Tuning"]
-  }
 ];
 
 export const PROJECTS_DATA: Project[] = [

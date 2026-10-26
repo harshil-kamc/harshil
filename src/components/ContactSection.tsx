@@ -1,8 +1,8 @@
-import { Github, Linkedin, Mail, MessageCircle, Phone } from "lucide-react";
+import { Mail, MessageCircle } from "lucide-react";
 import { HARSHIL_BIO } from "../data/portfolioData";
 
 export function ContactSection() {
-  const whatsappUrl = `https://wa.me/${HARSHIL_BIO.phone.replace(/[^0-9]/g, "")}`;
+  const whatsappUrl = `https://wa.me/${HARSHIL_BIO.whatsapp}`;
 
   return (
     <section
@@ -38,43 +38,10 @@ export function ContactSection() {
           </a>
         </div>
 
-        <div className="mt-8 flex flex-col items-center gap-3 text-sm text-zinc-400 sm:flex-row sm:justify-center sm:gap-6">
-          <a
-            href={`mailto:${HARSHIL_BIO.email}`}
-            className="inline-flex items-center gap-2 transition-colors hover:text-white"
-          >
-            <Mail className="h-4 w-4" />
-            {HARSHIL_BIO.email}
-          </a>
-          <a
-            href={`tel:${HARSHIL_BIO.phone.replace(/[^0-9+]/g, "")}`}
-            className="inline-flex items-center gap-2 transition-colors hover:text-white"
-          >
-            <Phone className="h-4 w-4" />
-            {HARSHIL_BIO.phone}
-          </a>
-        </div>
-
-        <div className="mt-8 flex flex-wrap justify-center gap-3">
-          <a
-            href={HARSHIL_BIO.github}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center gap-2 rounded-lg border border-white/10 px-4 py-2 text-sm text-zinc-300 transition-colors hover:border-white/25 hover:text-white"
-          >
-            <Github className="h-4 w-4" />
-            GitHub
-          </a>
-          <a
-            href={HARSHIL_BIO.linkedin}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center gap-2 rounded-lg border border-white/10 px-4 py-2 text-sm text-zinc-300 transition-colors hover:border-[#0A66C2]/50 hover:text-white"
-          >
-            <Linkedin className="h-4 w-4" />
-            LinkedIn
-          </a>
-        </div>
+        {/* Plain address so it can be copied without opening a mail client */}
+        <p className="mt-6 text-sm text-zinc-400 font-mono select-all">
+          {HARSHIL_BIO.email}
+        </p>
       </div>
     </section>
   );

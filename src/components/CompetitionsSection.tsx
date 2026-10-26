@@ -16,13 +16,10 @@ import {
   BookOpen,
   LayoutGrid,
   Search,
-  Maximize2,
-  Info,
 } from "lucide-react";
 import {
   COMPETITIONS_LIST,
   COMPETITION_CERTIFICATES_DRIVE_URL,
-  COMPETITION_FLIPBOOK_PAGES,
 } from "../data/portfolioData";
 import { Competition } from "../types/portfolio";
 import { StPageFlipBook } from "./StPageFlipBook";
@@ -48,7 +45,7 @@ export function CompetitionsSection() {
       <div className="h-84 min-h-[17.5rem] w-full pointer-events-none" aria-hidden="true" />
 
       {/* View Switcher & Action Header */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-10">
         <div className="flex items-center gap-2 bg-zinc-950/70 p-1.5 rounded-full border border-white/10 backdrop-blur-md">
           <button
             type="button"
@@ -60,7 +57,7 @@ export function CompetitionsSection() {
             }`}
           >
             <BookOpen className="w-3.5 h-3.5" />
-            <span>3D Flipbook Magazine</span>
+            <span>Flipbook</span>
           </button>
           <button
             type="button"
@@ -72,7 +69,7 @@ export function CompetitionsSection() {
             }`}
           >
             <LayoutGrid className="w-3.5 h-3.5" />
-            <span>All Cards Grid ({COMPETITIONS_LIST.length})</span>
+            <span>All {COMPETITIONS_LIST.length} as cards</span>
           </button>
         </div>
 
@@ -83,7 +80,7 @@ export function CompetitionsSection() {
           className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-[#00F0FF] text-xs font-mono transition-all hover:scale-105"
         >
           <FolderOpen className="w-3.5 h-3.5 text-[#00F0FF]" />
-          <span>Google Drive Certificate Vault</span>
+          <span>Certificates</span>
           <ExternalLink className="w-3 h-3 opacity-70" />
         </a>
       </div>
@@ -91,17 +88,7 @@ export function CompetitionsSection() {
       {/* View Mode 1: Interactive StPageFlip 3D Book */}
       {viewMode === "flipbook" && (
         <div className="animate-in fade-in duration-300">
-          <div className="relative w-full overflow-visible p-0 sm:p-2 flex flex-col items-center justify-center bg-transparent border-0 shadow-none backdrop-blur-none">
-            {/* Gallery Stage Banner */}
-            <div className="w-full flex items-center justify-between px-2 sm:px-4 mb-2">
-              <div className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-[#00F0FF] shadow-sm shadow-[#00F0FF]/60 animate-pulse" />
-              </div>
-              <span className="text-[11px] font-mono text-zinc-400 hidden sm:inline">
-                Drag corners to turn
-              </span>
-            </div>
-
+          <div className="relative w-full overflow-visible flex flex-col items-center justify-center">
             <StPageFlipBook
               onCompetitionSelect={(compData) => {
                 if (compData) setSelectedCompetition(compData);

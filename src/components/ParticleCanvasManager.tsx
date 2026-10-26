@@ -736,6 +736,19 @@ export function ParticleCanvasManager({
     }
     animate();
 
+    // Pause the render loop while the tab is hidden to save CPU/battery
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        if (animationRef.current) cancelAnimationFrame(animationRef.current);
+        animationRef.current = undefined;
+      } else if (!animationRef.current) {
+        lastFrameTimeRef.current = 0; // Avoid a huge frame delta skewing FPS adaptation
+        animate();
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
     const isHeroViewport = () => {
       const heroEl = document.getElementById("hero");
       if (heroEl) {
@@ -822,6 +835,7 @@ export function ParticleCanvasManager({
       window.removeEventListener("mouseup", handleWindowMouseUp, { capture: true });
       window.removeEventListener("blur", handleBlur);
       window.removeEventListener("resize", handleResize);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, [cycleInterval, autoCycle, interactiveMode]);
 

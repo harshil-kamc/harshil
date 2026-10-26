@@ -1,6 +1,6 @@
-import React, { useRef, useState, useMemo } from "react";
-import { motion } from "motion/react";
-import { RotateCcw, Sparkles, Cpu, Server, Database, Terminal, Move } from "lucide-react";
+import React, { useEffect, useRef, useState, useMemo } from "react";
+import { motion, useInView, useReducedMotion } from "motion/react";
+import { RotateCcw, Cpu, Server, Database, Terminal, Move } from "lucide-react";
 import { TECHNICAL_SKILLS } from "../data/portfolioData";
 import { cn } from "../lib/utils";
 
@@ -10,10 +10,10 @@ interface SkillCardConfig {
   tagline: string;
   level: number;
   highlight: string;
-  top: string;
-  left: string;
-  rotate: string;
-  widthClass: string;
+  /** Card centre as a fraction of the stage (0–1) */
+  cx: number;
+  cy: number;
+  rotate: number;
   accentColor: string;
   bgClass: string;
   icon: React.ReactNode;
@@ -133,34 +133,44 @@ const getSkillIconAndColors = (name: string, size = "w-8 h-8 sm:w-10 sm:h-10") =
   };
 };
 
-// Initial layout configurations framing around the center where particle engine forms "SKILLS"
-const DEFAULT_CARD_CONFIGS: { top: string; left: string; rotate: string; widthClass: string }[] = [
-  // 1. C (Top-Left)
-  { top: "6%", left: "4%", rotate: "-6deg", widthClass: "w-44 sm:w-56" },
-  // 2. Python (Bottom-Left)
-  { top: "58%", left: "5%", rotate: "8deg", widthClass: "w-48 sm:w-60" },
-  // 3. DSA (Top-Left-Center)
-  { top: "12%", left: "26%", rotate: "4deg", widthClass: "w-44 sm:w-56" },
-  // 4. Java (Top-Right-Center)
-  { top: "8%", left: "58%", rotate: "-8deg", widthClass: "w-46 sm:w-56" },
-  // 5. HTML (Top-Right)
-  { top: "10%", left: "76%", rotate: "9deg", widthClass: "w-44 sm:w-56" },
-  // 6. CSS (Bottom-Right)
-  { top: "54%", left: "74%", rotate: "-5deg", widthClass: "w-46 sm:w-58" },
-  // 7. RDBMS (Bottom-Center-Left)
-  { top: "65%", left: "26%", rotate: "-7deg", widthClass: "w-44 sm:w-56" },
-  // 8. SQL (Bottom-Center-Right)
-  { top: "62%", left: "52%", rotate: "6deg", widthClass: "w-44 sm:w-56" },
+// Card centres form a ring around the middle of the stage, where the particle
+// engine draws "SKILLS". Order matches TECHNICAL_SKILLS.
+const RING_LAYOUT: { cx: number; cy: number; rotate: number }[] = [
+  { cx: 0.13, cy: 0.18, rotate: -4 }, // C
+  { cx: 0.12, cy: 0.52, rotate: 3 }, // Python
+  { cx: 0.38, cy: 0.1, rotate: 2 }, // DSA
+  { cx: 0.62, cy: 0.1, rotate: -3 }, // Java
+  { cx: 0.87, cy: 0.18, rotate: 4 }, // HTML
+  { cx: 0.88, cy: 0.52, rotate: -2 }, // CSS
+  { cx: 0.24, cy: 0.84, rotate: -3 }, // RDBMS
+  { cx: 0.76, cy: 0.84, rotate: 3 }, // SQL
 ];
 
+const useIsDesktop = () => {
+  const query = "(min-width: 1024px)";
+  const [isDesktop, setIsDesktop] = useState(() =>
+    typeof window !== "undefined" ? window.matchMedia(query).matches : true
+  );
+  useEffect(() => {
+    const mql = window.matchMedia(query);
+    const onChange = () => setIsDesktop(mql.matches);
+    mql.addEventListener("change", onChange);
+    return () => mql.removeEventListener("change", onChange);
+  }, []);
+  return isDesktop;
+};
+
 export function SkillsSection() {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
   const [resetKey, setResetKey] = useState<number>(0);
+  const [stageSize, setStageSize] = useState({ width: 1280, height: 800 });
+  const isDesktop = useIsDesktop();
+  const isInView = useInView(stageRef, { once: true, amount: 0.35 });
 
   const skillsList: SkillCardConfig[] = useMemo(() => {
     return TECHNICAL_SKILLS.map((skill, idx) => {
       const meta = getSkillIconAndColors(skill.name);
-      const conf = DEFAULT_CARD_CONFIGS[idx % DEFAULT_CARD_CONFIGS.length];
+      const layout = RING_LAYOUT[idx % RING_LAYOUT.length];
       return {
         id: `skill-${skill.name.toLowerCase().replace(/[^a-z0-9]/g, "-")}-${idx}`,
         name: skill.name,
@@ -170,151 +180,152 @@ export function SkillsSection() {
         accentColor: meta.accentColor,
         bgClass: meta.bgClass,
         icon: meta.icon,
-        top: conf.top,
-        left: conf.left,
-        rotate: conf.rotate,
-        widthClass: conf.widthClass,
+        ...layout,
       };
     });
   }, []);
 
-  const handleReset = () => {
-    setResetKey((prev) => prev + 1);
-  };
+  // Track stage size so the entrance can start every card from the centre
+  useEffect(() => {
+    const el = stageRef.current;
+    if (!el) return;
+    const observer = new ResizeObserver(([entry]) => {
+      setStageSize({ width: entry.contentRect.width, height: entry.contentRect.height });
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [isDesktop]);
 
   return (
-    <section
-      id="skills"
-      className="relative w-full min-h-[46rem] sm:min-h-[52rem] lg:min-h-[54rem] overflow-hidden py-10 px-4 select-none font-sans"
-    >
-      {/* Container holding the draggable cards bounds */}
-      <div
-        ref={containerRef}
-        key={resetKey}
-        className="relative w-full h-full min-h-[42rem] sm:min-h-[48rem] lg:min-h-[50rem] max-w-7xl mx-auto rounded-3xl"
-      >
-        {/* Center Stage Particle Window & Guide */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-0">
-          {/* Subtle Cyber Radar Rings around the particle text zone */}
-          <div className="relative w-72 sm:w-96 h-72 sm:h-96 rounded-full border border-cyan-500/10 flex items-center justify-center">
-            <div className="w-52 sm:w-72 h-52 sm:h-72 rounded-full border border-dashed border-cyan-500/15 animate-[spin_60s_linear_infinite]" />
-            <div className="absolute w-36 sm:w-48 h-36 sm:h-48 rounded-full bg-cyan-500/5 blur-3xl" />
-          </div>
+    <section id="skills" className="relative w-full py-10 px-4 select-none font-sans">
+      {isDesktop ? (
+        <div
+          ref={stageRef}
+          key={resetKey}
+          className="relative w-full h-[50rem] max-w-7xl mx-auto"
+        >
+          {skillsList.map((skill, idx) => (
+            <DraggableCard
+              key={skill.id}
+              stageRef={stageRef}
+              skill={skill}
+              order={idx}
+              isInView={isInView}
+              stageSize={stageSize}
+            />
+          ))}
 
-          {/* Section Indicator in negative space */}
-          <div className="mt-4 flex items-center gap-2 px-3 py-1 rounded-full bg-black/40 border border-white/10 backdrop-blur-md">
-            <Sparkles className="w-3.5 h-3.5 text-[#00F0FF]" />
-            <span className="text-[11px] font-mono tracking-widest text-zinc-400 uppercase">
-              Interactive Canvas • Drag Any Skill
+          {/* Control bar */}
+          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-30 flex items-center gap-3 pl-4 pr-1.5 py-1.5 rounded-full bg-zinc-950/80 border border-white/10 backdrop-blur-xl shadow-[0_12px_30px_-10px_rgba(0,0,0,0.8)]">
+            <span className="flex items-center gap-2 text-[13px] text-zinc-400">
+              <Move className="w-3.5 h-3.5 text-[#00F0FF]" />
+              Drag the cards around
             </span>
+            <button
+              type="button"
+              onClick={() => setResetKey((prev) => prev + 1)}
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-[13px] text-[#00F0FF] hover:text-white transition-colors cursor-pointer active:scale-95"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+              Reset
+            </button>
           </div>
         </div>
-
-        {/* Draggable Cards Scattered in 2D Space */}
-        {skillsList.map((skill) => (
-          <DraggableCard
-            key={`${skill.id}-${resetKey}`}
-            containerRef={containerRef}
-            skill={skill}
-          />
-        ))}
-
-        {/* Float Control Bar in Bottom Center */}
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-30 flex items-center gap-3 px-4 py-2 rounded-2xl bg-zinc-950/80 border border-white/10 backdrop-blur-xl shadow-2xl">
-          <div className="flex items-center gap-2 text-xs font-mono text-zinc-400 pr-2 border-r border-white/10">
-            <Move className="w-3.5 h-3.5 text-[#00F0FF]" />
-            <span>Toss or arrange cards</span>
+      ) : (
+        <div ref={stageRef}>
+          {/* Leave room for the particle word, then a simple grid on smaller screens */}
+          <div className="h-56 sm:h-72 pointer-events-none" aria-hidden="true" />
+          <div className="max-w-3xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {skillsList.map((skill) => (
+              <SkillCard key={skill.id} skill={skill} />
+            ))}
           </div>
-
-          <button
-            type="button"
-            onClick={handleReset}
-            title="Reset positions"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-white/10 text-xs font-mono text-[#00F0FF] hover:text-white transition-all cursor-pointer shadow-sm hover:scale-105 active:scale-95"
-          >
-            <RotateCcw className="w-3.5 h-3.5" />
-            <span>Reset Layout</span>
-          </button>
         </div>
-      </div>
+      )}
     </section>
   );
 }
 
-interface DraggableCardProps {
-  containerRef: React.RefObject<HTMLDivElement | null>;
-  skill: SkillCardConfig;
-}
-
-const DraggableCard: React.FC<DraggableCardProps> = ({ containerRef, skill }) => {
-  const [zIndex, setZIndex] = useState<number>(10);
-
-  const updateZIndex = () => {
-    const els = document.querySelectorAll(".drag-elements");
-    let maxZ = 10;
-    els.forEach((el) => {
-      const z = parseInt(window.getComputedStyle(el).getPropertyValue("z-index"), 10);
-      if (!isNaN(z) && z > maxZ) {
-        maxZ = z;
-      }
-    });
-    setZIndex(maxZ + 1);
-  };
-
+const SkillCard: React.FC<{ skill: SkillCardConfig; className?: string; style?: React.CSSProperties }> = ({ skill, className, style }) => {
   return (
-    <motion.div
-      onMouseDown={updateZIndex}
-      onTouchStart={updateZIndex}
-      drag
-      dragConstraints={containerRef}
-      dragElastic={0.65}
-      whileDrag={{ scale: 1.05, cursor: "grabbing" }}
+    <div
       className={cn(
-        "drag-elements absolute rounded-2xl border p-4 sm:p-5 backdrop-blur-xl bg-gradient-to-br shadow-xl cursor-grab active:cursor-grabbing transition-shadow",
+        "rounded-2xl border p-5 backdrop-blur-xl bg-gradient-to-br transition-[border-color,box-shadow] duration-300",
         skill.bgClass,
-        skill.widthClass
+        className
       )}
       style={{
-        top: skill.top,
-        left: skill.left,
-        rotate: skill.rotate,
-        zIndex,
         borderColor: `${skill.accentColor}44`,
-        boxShadow: `0 15px 35px -10px ${skill.accentColor}35`,
+        boxShadow: `0 18px 40px -16px ${skill.accentColor}55, 0 8px 20px -12px rgba(0,0,0,0.8)`,
+        ...style,
       }}
     >
-      {/* Top Header Badge */}
-      <div className="flex items-center justify-between gap-2 mb-3">
-        <span className="text-[10px] font-mono tracking-wider uppercase px-2 py-0.5 rounded-full bg-black/50 border border-white/10 text-zinc-300">
+      <div className="flex items-center justify-between gap-2 mb-3.5">
+        <span className="text-[11px] font-mono tracking-wider uppercase px-2.5 py-0.5 rounded-full bg-black/45 border border-white/10 text-zinc-200">
           {skill.highlight}
         </span>
-        <span
-          className="w-2 h-2 rounded-full shadow-sm"
-          style={{ backgroundColor: skill.accentColor }}
-        />
+        <span className="w-2 h-2 rounded-full" style={{ backgroundColor: skill.accentColor }} />
       </div>
 
-      {/* Main Body: Icon + Title */}
-      <div className="flex items-center gap-3 mb-2.5">
+      <div className="flex items-center gap-3 mb-3">
         <div
-          className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-black/50 border flex items-center justify-center p-2 shrink-0 shadow-inner"
+          className="w-12 h-12 rounded-xl bg-black/45 border flex items-center justify-center p-2 shrink-0"
           style={{ borderColor: `${skill.accentColor}40` }}
         >
           {skill.icon}
         </div>
-        <div className="min-w-0">
-          <h3 className="text-lg sm:text-xl font-black text-white tracking-tight truncate drop-shadow-sm">
-            {skill.name}
-          </h3>
-        </div>
+        <h3 className="text-xl font-black text-white tracking-tight truncate">{skill.name}</h3>
       </div>
 
-      {/* Tagline description */}
-      <p className="text-xs text-zinc-300/90 line-clamp-2 leading-relaxed font-normal">
-        {skill.tagline}
-      </p>
-    </motion.div>
+      <p className="text-[13px] text-zinc-200/85 line-clamp-2 leading-relaxed">{skill.tagline}</p>
+    </div>
   );
+};
+
+interface DraggableCardProps {
+  stageRef: React.RefObject<HTMLDivElement | null>;
+  skill: SkillCardConfig;
+  order: number;
+  isInView: boolean;
+  stageSize: { width: number; height: number };
 }
+
+let topZIndex = 10;
+
+const DraggableCard: React.FC<DraggableCardProps> = ({ stageRef, skill, order, isInView, stageSize }) => {
+  const [zIndex, setZIndex] = useState<number>(10);
+  const reduceMotion = useReducedMotion();
+
+  // Offset from this card's resting place back to the centre of the stage
+  const fromCentre = {
+    x: stageSize.width * (0.5 - skill.cx),
+    y: stageSize.height * (0.5 - skill.cy),
+  };
+
+  const resting = { x: 0, y: 0, scale: 1, opacity: 1, rotate: skill.rotate };
+  const gathered = { x: fromCentre.x, y: fromCentre.y, scale: 0.55, opacity: 0, rotate: 0 };
+
+  return (
+    <div
+      className="absolute -translate-x-1/2 -translate-y-1/2"
+      style={{ left: `${skill.cx * 100}%`, top: `${skill.cy * 100}%`, zIndex }}
+    >
+      <motion.div
+        onPointerDown={() => setZIndex(++topZIndex)}
+        drag
+        dragConstraints={stageRef}
+        dragElastic={0.6}
+        initial={reduceMotion ? resting : gathered}
+        animate={isInView || reduceMotion ? resting : gathered}
+        transition={{ type: "spring", stiffness: 140, damping: 18, mass: 0.9, delay: reduceMotion ? 0 : order * 0.06 }}
+        whileHover={{ y: -6, scale: 1.03, transition: { duration: 0.25, ease: [0.16, 1, 0.3, 1] } }}
+        whileDrag={{ scale: 1.06, rotate: 0, cursor: "grabbing" }}
+        className="w-60 xl:w-64 cursor-grab touch-none"
+      >
+        <SkillCard skill={skill} />
+      </motion.div>
+    </div>
+  );
+};
 
 export default SkillsSection;

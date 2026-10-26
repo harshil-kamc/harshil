@@ -1,11 +1,12 @@
 import { HARSHIL_BIO } from "../data/portfolioData";
-import { ArrowDown, Sparkles } from "lucide-react";
+import { ArrowDown, FileText, Sparkles } from "lucide-react";
 
 interface HeroSectionProps {
   onOpenPlayground: () => void;
+  onOpenResume: () => void;
 }
 
-export function HeroSection({ onOpenPlayground }: HeroSectionProps) {
+export function HeroSection({ onOpenPlayground, onOpenResume }: HeroSectionProps) {
   return (
     <section
       id="hero"
@@ -38,7 +39,7 @@ export function HeroSection({ onOpenPlayground }: HeroSectionProps) {
             rel="noreferrer"
             aria-label="GitHub Profile"
             title="GitHub"
-            className="w-9 h-9 sm:w-10 sm:h-10 text-zinc-400 hover:text-white transition-all duration-300 hover:scale-115 hover:drop-shadow-[0_0_12px_rgba(255,255,255,0.4)] cursor-pointer inline-flex items-center justify-center"
+            className="social-glow [--glow:rgba(255,255,255,0.45)] w-9 h-9 sm:w-10 sm:h-10 text-zinc-100 hover:text-white cursor-pointer inline-flex items-center justify-center"
           >
             <svg
               className="w-8 h-8 sm:w-9 sm:h-9 fill-current"
@@ -59,7 +60,7 @@ export function HeroSection({ onOpenPlayground }: HeroSectionProps) {
             rel="noreferrer"
             aria-label="LinkedIn Profile"
             title="LinkedIn"
-            className="w-9 h-9 sm:w-10 sm:h-10 text-[#0A66C2] hover:text-[#38BDF8] transition-all duration-300 hover:scale-115 hover:drop-shadow-[0_0_12px_rgba(10,102,194,0.6)] cursor-pointer inline-flex items-center justify-center"
+            className="social-glow [--glow:rgba(56,140,230,0.75)] w-9 h-9 sm:w-10 sm:h-10 text-[#1D7FE0] hover:text-[#38BDF8] cursor-pointer inline-flex items-center justify-center"
           >
             <svg
               className="w-8 h-8 sm:w-9 sm:h-9 fill-current"
@@ -71,12 +72,12 @@ export function HeroSection({ onOpenPlayground }: HeroSectionProps) {
 
           {/* WhatsApp Original Icon */}
           <a
-            href={`https://wa.me/${HARSHIL_BIO.phone.replace(/[^0-9]/g, "")}`}
+            href={`https://wa.me/${HARSHIL_BIO.whatsapp}`}
             target="_blank"
             rel="noreferrer"
             aria-label="WhatsApp Message"
             title="WhatsApp"
-            className="w-9 h-9 sm:w-10 sm:h-10 text-[#25D366] opacity-50 hover:opacity-100 hover:text-[#4ADE80] transition-all duration-300 hover:scale-115 hover:drop-shadow-[0_0_12px_rgba(37,211,102,0.6)] cursor-pointer inline-flex items-center justify-center"
+            className="social-glow [--glow:rgba(37,211,102,0.7)] w-9 h-9 sm:w-10 sm:h-10 text-[#25D366] hover:text-[#4ADE80] cursor-pointer inline-flex items-center justify-center"
           >
             <svg
               className="w-6 h-6 sm:w-7 sm:h-7 fill-current"
@@ -91,7 +92,7 @@ export function HeroSection({ onOpenPlayground }: HeroSectionProps) {
             href={`mailto:${HARSHIL_BIO.email}`}
             aria-label="Direct Email"
             title="Gmail / Email"
-            className="w-9 h-9 sm:w-10 sm:h-10 opacity-50 hover:opacity-100 transition-all duration-300 hover:scale-115 hover:drop-shadow-[0_0_14px_rgba(234,67,53,0.5)] cursor-pointer inline-flex items-center justify-center"
+            className="social-glow [--glow:rgba(234,67,53,0.65)] w-9 h-9 sm:w-10 sm:h-10 cursor-pointer inline-flex items-center justify-center"
           >
             <svg
               className="w-6.5 h-6.5 sm:w-7.5 sm:h-7.5"
@@ -116,6 +117,14 @@ export function HeroSection({ onOpenPlayground }: HeroSectionProps) {
               <path d="M9.5 2.672a.5.5 0 1 0 1 0V.843a.5.5 0 0 0-1 0zm4.5.035A.5.5 0 0 0 13.293 2L12 3.293a.5.5 0 1 0 .707.707zM7.293 4A.5.5 0 1 0 8 3.293L6.707 2A.5.5 0 0 0 6 2.707zm-.621 2.5a.5.5 0 1 0 0-1H4.843a.5.5 0 1 0 0 1zm8.485 0a.5.5 0 1 0 0-1h-1.829a.5.5 0 0 0 0 1zM13.293 10A.5.5 0 1 0 14 9.293L12.707 8a.5.5 0 1 0-.707.707zM9.5 11.157a.5.5 0 0 0 1 0V9.328a.5.5 0 0 0-1 0zm1.854-5.097a.5.5 0 0 0 0-.706l-.708-.708a.5.5 0 0 0-.707 0L8.646 5.94a.5.5 0 0 0 0 .707l.708.708a.5.5 0 0 0 .707 0l1.293-1.293Zm-3 3a.5.5 0 0 0 0-.706l-.708-.708a.5.5 0 0 0-.707 0L.646 13.94a.5.5 0 0 0 0 .707l.708.708a.5.5 0 0 0 .707 0z"/>
             </svg>
             Launch Particle Lab
+          </button>
+
+          <button
+            onClick={onOpenResume}
+            className="flex items-center gap-2 px-6 py-3 rounded-full bg-zinc-950/60 hover:bg-white/10 border border-white/20 hover:border-white/60 text-white font-medium text-sm backdrop-blur-sm transition-all hover:scale-105 cursor-pointer"
+          >
+            <FileText className="w-4 h-4 text-[#00F0FF]" />
+            View Résumé
           </button>
         </div>
       </div>
